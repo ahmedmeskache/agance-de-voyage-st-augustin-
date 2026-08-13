@@ -4,7 +4,7 @@
   "private": true,
   "description": "Saint Augustin Tourisme & Voyages - public site + backend + admin panel",
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   },
   "scripts": {
     "install": "npm install --prefix server",
