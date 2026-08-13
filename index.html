@@ -1,0 +1,469 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saint Augustin Tourisme &amp; Voyages | Destination Algérie</title>
+<meta name="description" content="Agence de voyage à Annaba : circuits spirituels et culturels, excursions et séjours sur-mesure à travers l'Algérie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Dancing+Script:wght@600;700&family=Montserrat:wght@400;500;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/site.css?v=20260904150000">
+<style>
+  :root{ --page-hero-img: url('assets/hero-afternoon.png'); }
+
+  :root{
+    --hero-bg: url('assets/hero-afternoon.png');
+    --hero-overlay: linear-gradient(100deg, rgba(15,15,10,.5) 0%, rgba(20,15,10,.15) 45%, rgba(0,0,0,0) 65%);
+  }
+  body{
+    background:
+      radial-gradient(1200px 500px at 50% 0%, rgba(18,42,77,.10), rgba(18,42,77,0) 60%),
+      linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 320px, var(--cream) 560px, var(--cream) 100%);
+  }
+  .hero{
+    position:relative;min-height:600px;overflow:hidden;
+    background:#0d2038;
+  }
+  .hero-cycle{position:absolute;inset:0;z-index:0;}
+  .hero-cycle .layer{
+    position:absolute;inset:0;background-size:cover;background-position:center 42%;
+    opacity:0;transition:opacity 3.5s ease-in-out;
+  }
+  .hero-cycle .layer.active{opacity:1;}
+  .hero-cycle::after{
+    content:'';position:absolute;inset:0;
+    background:var(--hero-overlay);
+    transition:background 3.5s ease-in-out;
+  }
+  .hero-cycle.phase-morning::after{ background:linear-gradient(100deg, rgba(40,25,15,.35) 0%, rgba(60,35,15,.12) 45%, rgba(0,0,0,0) 65%); }
+  .hero-cycle.phase-afternoon::after{ background:linear-gradient(100deg, rgba(15,15,10,.5) 0%, rgba(20,15,10,.15) 45%, rgba(0,0,0,0) 65%); }
+  .hero-cycle.phase-night::after{ background:linear-gradient(100deg, rgba(5,8,20,.72) 0%, rgba(8,12,28,.45) 45%, rgba(0,0,5,.15) 65%); }
+  .hero-text{position:relative;z-index:2;}
+  .hero > header.floating{position:relative;z-index:3;}
+  .hero-dots{
+    position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;gap:8px;z-index:4;
+  }
+  .hero-dots span{
+    width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35);
+    cursor:pointer;transition:background .3s,transform .3s;
+  }
+  .hero-dots span.active{background:var(--gold-light);transform:scale(1.3);}
+  .hero-text{
+    position:relative;height:100%;width:56%;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:180px 5% 100px 6%;z-index:5;
+  }
+  .hero-text .destination{
+    font-family:'Dancing Script',cursive;font-size:44px;color:var(--gold-light);
+    font-weight:700;margin-bottom:-6px;text-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  .hero-text h2{
+    font-family:'Playfair Display',serif;font-size:88px;font-weight:800;color:#fff;
+    letter-spacing:6px;line-height:1;text-shadow:0 4px 18px rgba(0,0,0,.4);margin:6px 0 14px;
+  }
+  .hero-text .subtitle{
+    font-size:15px;font-weight:600;letter-spacing:3.5px;color:#f2e9d8;
+    text-transform:uppercase;margin-bottom:34px;text-shadow:0 2px 8px rgba(0,0,0,.4);
+  }
+  .quote-wrap{margin-top:-110px;z-index:10;padding-top:0;}
+  .info-bar{margin-top:40px;}
+  @media (max-width:900px){
+    .hero{min-height:680px;background-position:30% center;}
+    .hero-text{width:100%;padding:130px 6% 140px;}
+    .hero-text h2{font-size:56px;letter-spacing:3px;}
+  }
+  @media (max-width:600px){ .quote-wrap{margin-top:-70px;} }
+
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-cycle phase-afternoon" id="heroCycle">
+    <div class="layer active" data-phase="morning" style="background-image:url('assets/hero-morning.png')"></div>
+    <div class="layer" data-phase="afternoon" style="background-image:url('assets/hero-afternoon.png')"></div>
+    <div class="layer" data-phase="night" style="background-image:url('assets/hero-night.png')"></div>
+  </div>
+  <div class="hero-dots" id="heroDots">
+    <span data-i="0" class="active" aria-label="Matin"></span>
+    <span data-i="1" aria-label="Après-midi"></span>
+    <span data-i="2" aria-label="Nuit"></span>
+  </div>
+  <header class="floating">
+  <div class="brand">
+    <a href="index.html"><img src="assets/logo.png" alt="Saint Augustin Tourisme &amp; Voyages" class="logo-img"></a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="mainNav">
+    <ul>
+      <li>
+        <a href="index.html" data-i18n="nav_home">Accueil</a>
+        <div class="submenu">
+          <a href="index.html" data-i18n="sub_home_1">Présentation</a>
+          <a href="actualites.html" data-i18n="sub_home_2">Actualités</a>
+        </div>
+      </li>
+      <li>
+        <a href="excursions-interieur.html" data-i18n="nav_excursions">Nos Excursions</a>
+      </li>
+      <li>
+        <a href="circuits-algerie.html" data-i18n="nav_tours">Nos Circuits</a>
+        <div class="submenu submenu-tours"><div class="submenu-col"><div class="submenu-group" data-i18n="sub_tours_g1">Pour les Algériens</div><a href="circuits-algerie.html" data-i18n="sub_tours_1">Circuits en Algérie</a><a href="circuits-international.html" data-i18n="sub_tours_2">Circuits à l'International</a><a href="omra.html" data-i18n="sub_tours_3">Omra</a></div><div class="submenu-col"><div class="submenu-group" data-i18n="sub_tours_g2">Pour les étrangers</div><a href="decouverte-algerie.html" data-i18n="sub_tours_4">Découverte de l'Algérie</a></div></div>
+      </li>
+      <li>
+        <a href="notre-histoire.html" data-i18n="nav_about">À Propos</a>
+        <div class="submenu">
+          <a href="notre-histoire.html" data-i18n="sub_about_1">Notre Histoire</a>
+        </div>
+      </li>
+      <li>
+        <a href="conditions-tarifs.html" data-i18n="nav_info">Info</a>
+        <div class="submenu">
+          <a href="conditions-tarifs.html" data-i18n="sub_info_2">Conditions &amp; Tarifs</a>
+        </div>
+      </li>
+      <li>
+        <a href="blog-articles.html" data-i18n="nav_blog">Blog</a>
+        <div class="submenu">
+          <a href="blog-articles.html" data-i18n="sub_blog_1">Derniers Articles</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <div class="lang-select" id="langSelect">
+    <div class="lang-current" id="langCurrent">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20"/></svg>
+      <span id="langLabel" data-i18n="lang_label">Langue</span>
+      <svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="lang-menu" id="langMenu">
+      <div class="lang-option" data-lang="fr"><span class="flag">🇫🇷</span> Français</div>
+      <div class="lang-option" data-lang="en"><span class="flag">🇬🇧</span> English</div>
+      <div class="lang-option" data-lang="ar"><span class="flag">🇩🇿</span> العربية</div>
+    </div>
+  </div>
+</header>
+
+  <div class="hero-text">
+    <div class="destination" data-i18n="hero_destination">Destination</div>
+    <h2 data-i18n="hero_title">ALGÉRIE</h2>
+    <div class="subtitle" data-i18n="hero_subtitle">Terre d'histoire, de culture et d'émotions</div>
+  </div>
+</section>
+
+<div class="quote-wrap">
+  <div class="quote-box">
+<div class="mark" data-i18n="quote_open">&laquo;</div>
+    <p data-i18n="quote_text">« Le monde est un livre, et ceux qui ne voyagent pas n'en lisent qu'une page. »</p>
+    <div class="mark" data-i18n="quote_close">&raquo;</div>
+  </div>
+</div>
+
+<div class="strip">
+  <span class="dash"></span>
+  <span data-i18n="strip_text">Voyagez avec foi, découvrez avec le cœur. ✈</span>
+  <span class="dash"></span>
+</div>
+
+<section class="block">
+  <div class="container">
+    <div class="spotlight">
+      <img src="assets/hero-morning.png" alt="Algérie au lever du soleil">
+      <div class="spotlight-body">
+        <div class="kicker" data-i18n="why_kicker">Pourquoi voyager avec S.A.T.V. ?</div>
+<h3 data-i18n="why_title">Voyagez l'esprit libre, nous nous occupons du reste</h3>
+        <p data-i18n="why_text">S.A.T.V. orchestre l'ensemble de votre séjour de A à Z. Profitez d'un service clé en main incluant accueil VIP, hébergement, transports, pension complète et guide accompagnateur dédié.</p>
+        <div class="chips">
+          <div class="chip" data-i18n="why_chip1">✈️ Accueil &amp; assistance aéroport</div>
+          <div class="chip" data-i18n="why_chip2">🚌 Transport inclus</div>
+          <div class="chip" data-i18n="why_chip3">🍽️ Pension complète</div>
+          <div class="chip" data-i18n="why_chip4">🗺️ Guide accompagnateur</div>
+          <div class="chip" data-i18n="why_chip5">🏨 Hébergement</div>
+        </div>
+        <button type="button" class="btn" data-book="Demande de devis" data-book-sub="Séjour sur-mesure · Saint Augustin Tourisme & Voyages" data-i18n="why_btn">Demander un devis</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats-band">
+  <div class="container">
+    <div class="grid cols-4" style="justify-content:center;text-align:center;">
+      <div class="stat"><b>12+</b><span data-i18n="stat1">Ans d'expérience</span></div>
+      <div class="stat"><b>30+</b><span data-i18n="stat3">Circuits &amp; excursions</span></div>
+      <div class="stat"><b>2 500+</b><span data-i18n="stat4">Voyageurs accompagnés</span></div>
+      <div class="stat"><b>Annaba</b><span data-i18n="stat2">Wilaya d'Annaba</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker" data-i18n="steps_kicker">Comment ça marche</div>
+      <h2 data-i18n="steps_title">Votre voyage en 4 étapes</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h4 data-i18n="step1_t">Vous nous contactez</h4><p data-i18n="step1_d">Par téléphone, WhatsApp ou via le formulaire du site.</p></div>
+      <div class="step"><div class="num">2</div><h4 data-i18n="step2_t">Nous construisons votre programme</h4><p data-i18n="step2_d">Circuit, excursion ou séjour sur-mesure selon vos envies.</p></div>
+      <div class="step"><div class="num">3</div><h4 data-i18n="step3_t">Vous réservez en toute sérénité</h4><p data-i18n="step3_d">Tarifs clairs, conditions transparentes.</p></div>
+      <div class="step"><div class="num">4</div><h4 data-i18n="step4_t">Vous voyagez, on s'occupe du reste</h4><p data-i18n="step4_d">Accueil, transport, hébergement et guide inclus.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker" data-i18n="contact_kicker">Restons en contact</div>
+      <h2 data-i18n="contact_title">Prêt à partir sur les traces de l'Algérie ?</h2>
+      <p data-i18n="contact_text">Notre équipe vous répond rapidement pour construire ensemble le voyage qui vous ressemble.</p>
+    </div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="https://wa.me/213551848423" target="_blank" rel="noopener" class="btn outline" data-i18n="contact_whatsapp">WhatsApp 0551 84 84 23</a>
+      <a href="https://wa.me/213554678921" target="_blank" rel="noopener" class="btn outline" data-i18n="contact_whatsapp2">WhatsApp 0554 67 89 21</a>
+      <a href="https://wa.me/213669002118" target="_blank" rel="noopener" class="btn outline" data-i18n="contact_whatsapp3">WhatsApp 0669 00 21 18</a>
+    </div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:20px;">
+      <a href="https://www.facebook.com/share/1EjGeWNXgi/?mibextid=wwXIfr" target="_blank" rel="noopener" class="btn outline">Facebook</a>
+      <a href="https://www.instagram.com/saintaugustintravel23" target="_blank" rel="noopener" class="btn outline">Instagram</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const pageTranslations = {
+    fr: {
+      hero_destination:"Destination", hero_title:"ALGÉRIE",
+      hero_subtitle:"Terre d'histoire, de culture et d'émotions",
+      hero_cta:"Découvrez la magie de l'Algérie →",
+      quote_open:"«", quote_close:"»",
+      quote_text:"Le monde est un livre, et ceux qui ne voyagent pas n'en lisent qu'une page.",
+      feat_kicker:"Nos plus belles adresses",
+      feat_title:"Circuits & Excursions en Vedette",
+      feat_subtitle:"Des voyages pensés pour vous faire vivre l'Algérie autrement : spiritualité, patrimoine, nature et traditions réunis dans des programmes clés en main.",
+      f1_tag:"Circuit phare", f1_route:"📍 Alger · Mostaganem · Tlemcen · Oran",
+      f1_title:"Sur les Traces des Saints",
+      f1_desc:"5 jours / 4 nuits en pension complète à travers les hauts lieux spirituels et culturels de l'Algérie.",
+      f1_link:"Découvrir le circuit →",
+      f2_tag:"Événement", f2_route1:"📍 Batna", f2_route2:"☀️ Été",
+      f2_title:"Festival International de Timgad",
+      f2_desc:"Concerts et spectacles culturels au cœur des remarquables ruines romaines de Timgad.",
+      f2_link:"Lire l'article →",
+      f3_tag:"Tradition", f3_route1:"📍 Djanet", f3_route2:"🕌 Achoura",
+      f3_title:"La Sebiba de Djanet",
+      f3_desc:"Danses, chants touaregs et rituels ancestraux : l'une des plus célèbres fêtes du grand sud algérien.",
+      f3_link:"Lire l'article →",
+      why_kicker:"Pourquoi voyager avec S.A.T.V. ?",
+      why_title:"Voyagez l'esprit libre, nous nous occupons du reste",
+      why_text:"S.A.T.V. orchestre l'ensemble de votre séjour de A à Z. Profitez d'un service clé en main incluant accueil VIP, hébergement, transports, pension complète et guide accompagnateur dédié.",
+why_chip1:"✈️ Accueil & assistance aéroport", why_chip2:"🚌 Transport inclus",
+      why_chip3:"🍽️ Pension complète", why_chip4:"🗺️ Guide accompagnateur", why_chip5:"🏨 Hébergement",
+      why_btn:"Demander un devis",
+      stat1:"Ans d'expérience", stat2:"Wilaya d'Annaba",
+      stat3:"Circuits & excursions", stat4:"Voyageurs accompagnés",
+      steps_kicker:"Comment ça marche", steps_title:"Votre voyage en 4 étapes",
+      step1_t:"Vous nous contactez", step1_d:"Par téléphone, WhatsApp ou via le formulaire du site.",
+      step2_t:"Nous construisons votre programme", step2_d:"Circuit, excursion ou séjour sur-mesure selon vos envies.",
+      step3_t:"Vous réservez en toute sérénité", step3_d:"Tarifs clairs, conditions transparentes.",
+      step4_t:"Vous voyagez, on s'occupe du reste", step4_d:"Accueil, transport, hébergement et guide inclus.",
+      contact_kicker:"Restons en contact",
+      contact_title:"Prêt à partir sur les traces de l'Algérie ?",
+      contact_text:"Notre équipe vous répond rapidement pour construire ensemble le voyage qui vous ressemble.",
+contact_whatsapp:"WhatsApp 0551 84 84 23", contact_whatsapp2:"WhatsApp 0554 67 89 21", contact_whatsapp3:"WhatsApp 0669 00 21 18",
+       footer_made:"Site conçu avec ♥ pour les voyageurs curieux"
+    },
+    en: {
+      hero_destination:"Destination", hero_title:"ALGERIA",
+      hero_subtitle:"Land of history, culture and emotions",
+      hero_cta:"Discover the magic of Algeria →",
+      quote_open:"“", quote_close:"”",
+      quote_text:"The world is a book, and those who do not travel read only one page of it.",
+      feat_kicker:"Our finest destinations",
+      feat_title:"Featured Circuits & Excursions",
+      feat_subtitle:"Journeys designed to help you experience Algeria differently: spirituality, heritage, nature and traditions combined in turnkey programs.",
+      f1_tag:"Flagship circuit", f1_route:"📍 Algiers · Mostaganem · Tlemcen · Oran",
+      f1_title:"In the Footsteps of the Saints",
+      f1_desc:"5 days / 4 nights full board through Algeria's most sacred spiritual and cultural sites.",
+      f1_link:"Discover the circuit →",
+      f2_tag:"Event", f2_route1:"📍 Batna", f2_route2:"☀️ Summer",
+      f2_title:"Timgad International Festival",
+      f2_desc:"Concerts and cultural shows in the heart of Timgad's remarkable Roman ruins.",
+      f2_link:"Read the article →",
+      f3_tag:"Tradition", f3_route1:"📍 Djanet", f3_route2:"🕌 Ashura",
+      f3_title:"The Sebiba of Djanet",
+      f3_desc:"Tuareg dances, songs and ancestral rituals: one of the most famous festivals of the great Algerian south.",
+      f3_link:"Read the article →",
+      why_kicker:"Why travel with S.A.T.V.?",
+      why_title:"Travel with peace of mind, we take care of the rest",
+why_text:"S.A.T.V. orchestrates your entire stay from A to Z. Enjoy an all-in-one service including VIP meet-and-greet, accommodation, transport, full board and a dedicated accompanying guide.",
+      why_chip1:"✈️ Airport pickup & assistance", why_chip2:"🚌 Transport included",
+      why_chip3:"🍽️ Full board", why_chip4:"🗺️ Accompanying guide", why_chip5:"🏨 Accommodation",
+      why_btn:"Request a quote",
+      stat1:"Years of experience", stat2:"Wilaya of Annaba",
+      stat3:"Circuits & excursions", stat4:"Travelers accompanied",
+      steps_kicker:"How it works", steps_title:"Your trip in 4 steps",
+      step1_t:"You contact us", step1_d:"By phone, WhatsApp or via the website form.",
+      step2_t:"We build your program", step2_d:"Circuit, excursion or tailor-made stay according to your wishes.",
+      step3_t:"You book with peace of mind", step3_d:"Clear prices, transparent conditions.",
+      step4_t:"You travel, we take care of the rest", step4_d:"Pickup, transport, accommodation and guide included.",
+      contact_kicker:"Let's stay in touch",
+      contact_title:"Ready to set off in the footsteps of Algeria?",
+      contact_text:"Our team answers quickly to build together the trip that suits you.",
+contact_whatsapp:"WhatsApp 0551 84 84 23", contact_whatsapp2:"WhatsApp 0554 67 89 21", contact_whatsapp3:"WhatsApp 0669 00 21 18",
+       footer_made:"Site built with ♥ for curious travelers"
+    },
+    ar: {
+      hero_destination:"الوجهة", hero_title:"الجزائر",
+      hero_subtitle:"أرض التاريخ والثقافة والمشاعر",
+      hero_cta:"← اكتشف سحر الجزائر",
+      quote_open:"«", quote_close:"»",
+      quote_text:"العالم كتاب، ومن لا يسافر يقرأ منه صفحة واحدة فقط.",
+      feat_kicker:"أجمل وجهاتنا",
+      feat_title:"جولات ورحلات مميزة",
+      feat_subtitle:"رحلات صُممت لتعيش الجزائر بطريقة مختلفة: الروحانية، التراث، الطبيعة والتقاليد مجتمعة في برامج متكاملة.",
+      f1_tag:"رحلة مميزة", f1_route:"📍 الجزائر العاصمة · مستغانم · تلمسان · وهران",
+      f1_title:"على خطى الأولياء",
+      f1_desc:"5 أيام / 4 ليالٍ مع إقامة كاملة عبر أبرز الأماكن الروحية والثقافية في الجزائر.",
+      f1_link:"اكتشف الرحلة ←",
+      f2_tag:"فعالية", f2_route1:"📍 باتنة", f2_route2:"☀️ الصيف",
+      f2_title:"المهرجان الدولي بتيمقاد",
+      f2_desc:"حفلات وعروض ثقافية في قلب الآثار الرومانية الرائعة لتيمقاد.",
+      f2_link:"اقرأ المقال ←",
+      f3_tag:"تقاليد", f3_route1:"📍 جانت", f3_route2:"🕌 عاشوراء",
+      f3_title:"سبيبة جانت",
+      f3_desc:"رقصات وأغانٍ طوارقية وطقوس عريقة: من أشهر الاحتفالات في الجنوب الجزائري الكبير.",
+      f3_link:"اقرأ المقال ←",
+      why_kicker:"لماذا تسافر مع وكالة سانت أوغستان؟",
+      why_title:"سافر براحة بال، ونحن نتكفّل بالباقي",
+why_text:"تُنسِّق وكالة سانت أوغستان رحلتك بالكامل من الألف إلى الياء. استمتع بخدمة متكاملة تشمل استقبال VIP، إقامة، نقل، إقامة كاملة ومرشداً مرافقاً مخصصاً.",
+      why_chip1:"✈️ الاستقبال والمساعدة في المطار", why_chip2:"🚌 النقل مشمول",
+      why_chip3:"🍽️ إقامة كاملة", why_chip4:"🗺️ دليل مرافق", why_chip5:"🏨 الإقامة",
+      why_btn:"اطلب عرض سعر",
+      stat1:"سنة من الخبرة", stat2:"ولاية عنابة",
+      stat3:"جولة ورحلة", stat4:"مسافر رافقناه",
+      steps_kicker:"كيف تعمل الخدمة", steps_title:"رحلتك في 4 خطوات",
+      step1_t:"تتواصل معنا", step1_d:"هاتفياً، عبر واتساب أو من خلال نموذج الموقع.",
+      step2_t:"نبني لك البرنامج", step2_d:"جولة أو رحلة أو إقامة مصممة حسب رغباتك.",
+      step3_t:"تحجز بكل اطمئنان", step3_d:"أسعار واضحة وشروط شفافة.",
+      step4_t:"تسافر ونحن نتكفل بالباقي", step4_d:"الاستقبال والنقل والإقامة والدليل مشمولة.",
+      contact_kicker:"لنبقَ على تواصل",
+      contact_title:"مستعد للانطلاق على خطى الجزائر؟",
+      contact_text:"فريقنا يرد عليك بسرعة لبناء معاً الرحلة التي تناسبك.",
+contact_whatsapp:"واتساب 0551 84 84 23", contact_whatsapp2:"واتساب 0554 67 89 21", contact_whatsapp3:"واتساب 0669 00 21 18",
+       footer_made:"موقع مصمم بـ ♥ للمسافرين الفضوليين"
+    }
+  };
+</script>
+<div class="strip">
+  <span class="dash"></span>
+  <span data-i18n="strip_text">Voyagez avec foi, découvrez avec le cœur. ✈</span>
+  <span class="dash"></span>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <img src="assets/logo.png" alt="S.A.T.V.">
+        </div>
+        <p data-i18n="footer_about_text">Saint Augustin Tourisme &amp; Voyages vous accompagne à travers l'Algérie et au-delà : circuits spirituels et culturels, excursions et séjours sur-mesure, organisés avec sérieux et passion.</p>
+        <div class="social-row">
+          <a href="https://www.facebook.com/share/1EjGeWNXgi/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>
+          <a href="https://www.instagram.com/saintaugustintravel23" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.1 0 4.1.1 1 0 1.7.2 2.3.5.6.2 1.1.6 1.6 1.1.5.5.8.9 1.1 1.6.3.6.4 1.3.5 2.3.1 1 .1 1.4.1 4.1s0 3.1-.1 4.1c0 1-.2 1.7-.5 2.3-.2.6-.6 1.1-1.1 1.6-.5.5-.9.8-1.6 1.1-.6.3-1.3.4-2.3.5-1 .1-1.4.1-4.1.1s-3.1 0-4.1-.1c-1 0-1.7-.2-2.3-.5-.6-.2-1.1-.6-1.6-1.1-.5-.5-.8-.9-1.1-1.6-.3-.6-.4-1.3-.5-2.3C2 15.1 2 14.7 2 12s0-3.1.1-4.1c0-1 .2-1.7.5-2.3.2-.6.6-1.1 1.1-1.6.5-.5.9-.8 1.6-1.1.6-.3 1.3-.4 2.3-.5C8.9 2 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.2-8.4a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z"/></svg></a>
+          <a href="https://wa.me/213551848423" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_links_title">Liens Rapides</h5>
+        <ul>
+          <li><a href="index.html" data-i18n="nav_home">Accueil</a></li>
+          <li><a href="notre-histoire.html" data-i18n="sub_about_1">Notre Histoire</a></li>
+          <li><a href="blog-articles.html" data-i18n="sub_blog_1">Derniers Articles</a></li>
+          <li><a href="localisation.html" data-i18n="sub_contact_1">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_offers_title">Nos Offres</h5>
+        <ul>
+          <li><a href="circuits-algerie.html" data-i18n="sub_tours_1">Circuits en Algérie</a></li>
+          <li><a href="circuits-international.html" data-i18n="sub_tours_2">Circuits International</a></li>
+          <li><a href="omra.html" data-i18n="sub_tours_3">Omra</a></li><li><a href="decouverte-algerie.html" data-i18n="sub_tours_4">Découverte de l&apos;Algérie</a></li>
+          <li><a href="excursions-interieur.html" data-i18n="sub_exc_1">Excursions</a></li>
+          <li><a href="conditions-tarifs.html" data-i18n="sub_info_2">Conditions &amp; Tarifs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_contact_title">Contact</h5>
+        <ul>
+          <li>📞 0551 84 84 23 — 0554 67 89 21 — 0669 00 21 18</li>
+          <li>✉️ comercial.staugustin@gmail.com</li>
+          
+          <li>📍 Tour Medibat, Bouni, Annaba</li>
+        </ul>
+        <div class="footer-map">
+          <iframe src="https://www.google.com/maps?q=N%C2%B0+08,+156+logs+MEDITBAT+Tour+A1,+El+Bouni,+Algeria&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Agence Saint Augustin — Bouni, Annaba"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© <span class="js-year">2026</span> Saint Augustin Tourisme &amp; Voyages (S.A.T.V.) — <span data-i18n="footer_rights">Tous droits réservés.</span></div>
+      <div><span data-i18n="footer_made">Site conçu avec ♥ pour les voyageurs curieux</span></div>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/213551848423" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg>
+</a>
+
+<script src="assets/site.js?v=20260904150000"></script>
+  <script src="assets/app.js"></script>
+<script>
+(function(){
+  var cycle = document.getElementById('heroCycle');
+  var dots = document.querySelectorAll('#heroDots span');
+  if(!cycle) return;
+  var layers = cycle.querySelectorAll('.layer');
+  var phases = ['morning','afternoon','night'];
+  var i = 1;
+
+  function goTo(index){
+    i = (index + phases.length) % phases.length;
+    layers.forEach(function(l){ l.classList.toggle('active', l.dataset.phase === phases[i]); });
+    cycle.className = 'hero-cycle phase-' + phases[i];
+    dots.forEach(function(d,di){ d.classList.toggle('active', di === i); });
+  }
+
+  /* ---------- follow the visitor's actual local time ----------
+     05:00–11:59 -> morning, 12:00–17:59 -> afternoon, 18:00–04:59 -> night */
+  function phaseFromLocalTime(){
+    var h = new Date().getHours();
+    if (h >= 5 && h < 12) return 0;
+    if (h >= 12 && h < 18) return 1;
+    return 2;
+  }
+
+  function syncToLocalTime(){ goTo(phaseFromLocalTime()); }
+
+  /* dots still let a visitor preview another time of day manually */
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){
+      goTo(parseInt(d.dataset.i,10));
+    });
+  });
+
+  syncToLocalTime();
+  /* re-check every minute in case the visitor crosses a time boundary
+     while the page stays open */
+  setInterval(syncToLocalTime, 60000);
+})();
+</script>
+
+</body>
+</html>

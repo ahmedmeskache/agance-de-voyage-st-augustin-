@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derniers Articles | Blog S.A.T.V.</title>
+<meta name="description" content="Récits de voyage, conseils pratiques et actualités culturelles par Saint Augustin Tourisme & Voyages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Dancing+Script:wght@600;700&family=Montserrat:wght@400;500;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="assets/logo.png">
+<link rel="stylesheet" href="assets/site.css?v=20260904150000">
+<style>
+  :root{ --page-hero-img: url('assets/hero-morning.png'); }
+
+</style>
+</head>
+<body>
+<section class="page-hero">
+  <header class="floating">
+  <div class="brand">
+    <a href="index.html"><img src="assets/logo.png" alt="Saint Augustin Tourisme &amp; Voyages" class="logo-img"></a>
+  </div>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <nav id="mainNav">
+    <ul>
+      <li>
+        <a href="index.html" data-i18n="nav_home">Accueil</a>
+        <div class="submenu">
+          <a href="index.html" data-i18n="sub_home_1">Présentation</a>
+          <a href="actualites.html" data-i18n="sub_home_2">Actualités</a>
+        </div>
+      </li>
+      <li>
+        <a href="excursions-interieur.html" data-i18n="nav_excursions">Nos Excursions</a>
+      </li>
+      <li>
+        <a href="circuits-algerie.html" data-i18n="nav_tours">Nos Circuits</a>
+        <div class="submenu submenu-tours"><div class="submenu-col"><div class="submenu-group" data-i18n="sub_tours_g1">Pour les Algériens</div><a href="circuits-algerie.html" data-i18n="sub_tours_1">Circuits en Algérie</a><a href="circuits-international.html" data-i18n="sub_tours_2">Circuits à l'International</a><a href="omra.html" data-i18n="sub_tours_3">Omra</a></div><div class="submenu-col"><div class="submenu-group" data-i18n="sub_tours_g2">Pour les étrangers</div><a href="decouverte-algerie.html" data-i18n="sub_tours_4">Découverte de l'Algérie</a></div></div>
+      </li>
+      <li>
+        <a href="notre-histoire.html" data-i18n="nav_about">À Propos</a>
+        <div class="submenu">
+          <a href="notre-histoire.html" data-i18n="sub_about_1">Notre Histoire</a>
+        </div>
+      </li>
+      <li>
+        <a href="conditions-tarifs.html" data-i18n="nav_info">Info</a>
+        <div class="submenu">
+          <a href="conditions-tarifs.html" data-i18n="sub_info_2">Conditions &amp; Tarifs</a>
+        </div>
+      </li>
+      <li>
+        <a href="blog-articles.html" data-i18n="nav_blog">Blog</a>
+        <div class="submenu">
+          <a href="blog-articles.html" data-i18n="sub_blog_1">Derniers Articles</a>
+        </div>
+      </li>
+    </ul>
+  </nav>
+  <div class="lang-select" id="langSelect">
+    <div class="lang-current" id="langCurrent">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20 15 15 0 010-20"/></svg>
+      <span id="langLabel" data-i18n="lang_label">Langue</span>
+      <svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="lang-menu" id="langMenu">
+      <div class="lang-option" data-lang="fr"><span class="flag">🇫🇷</span> Français</div>
+      <div class="lang-option" data-lang="en"><span class="flag">🇬🇧</span> English</div>
+      <div class="lang-option" data-lang="ar"><span class="flag">🇩🇿</span> العربية</div>
+    </div>
+  </div>
+</header>
+
+  <div class="eyebrow" data-i18n="hero_eyebrow">Blog</div>
+  <h1 data-i18n="hero_title">Derniers Articles</h1>
+  <p class="lead" data-i18n="hero_lead">Conseils pratiques et bonnes astuces pour préparer et réussir votre voyage en toute sérénité.</p>
+  <div class="breadcrumb">
+    <a href="index.html" data-i18n="breadcrumb_home">Accueil</a>
+    <span class="sep">/</span>
+    <span data-i18n="breadcrumb_articles">Derniers Articles</span>
+  </div>
+</section>
+
+<section class="block alt">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker" data-i18n="sec_kicker">Récits, conseils &amp; découvertes</div>
+      <h2 data-i18n="sec_title">Derniers Articles</h2>
+      <p data-i18n="sec_subtitle">Nos guides et récits de voyage pour préparer votre prochaine excursion en Algérie et au-delà.</p>
+    </div>
+<div class="grid cols-3">
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/documents.jpg" alt="Documents de voyage"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art1_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art1_title">Documents et visas : ce qu'il faut préparer</h3>
+          <p data-i18n="art1_desc">Passeport, visas, assurance : vérifiez les démarches indispensables pour voyager sans mauvaise surprise.</p>
+          <a href="blog-advice-documents.html" class="card-link" data-i18n="art1_link">Lire l'article →</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/budget.jpg" alt="Gestion du budget de voyage"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art2_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art2_title">Bien gérer son budget de voyage</h3>
+          <p data-i18n="art2_desc">Prévoyez dépenses, moyens de paiement et marge de sécurité pour profiter sans stress de votre séjour.</p>
+          <a href="blog-advice-budget.html" class="card-link" data-i18n="art2_link">Lire l'article →</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/deplacements.jpg" alt="Se déplacer en Algérie"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art3_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art3_title">Se déplacer en Algérie sans stress</h3>
+          <p data-i18n="art3_desc">Transports, routes, distances : nos conseils pour organiser vos déplacements en toute tranquillité.</p>
+          <a href="blog-advice-deplacements.html" class="card-link" data-i18n="art3_link">Lire l'article →</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/reflexes.jpg" alt="Réflexes pour un voyage réussi"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art4_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art4_title">5 réflexes pour un voyage réussi</h3>
+          <p data-i18n="art4_desc">Sécurité, santé, langues locales : de bons réflexes font toute la différence sur la route.</p>
+          <a href="blog-advice-reflexes.html" class="card-link" data-i18n="art4_link">Lire l'article →</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/valise.jpg" alt="Bien préparer sa valise"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art5_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art5_title">Bien préparer sa valise</h3>
+          <p data-i18n="art5_desc">Léger mais complet : nos conseils pour ne rien oublier et voyager malin, quelle que soit la destination.</p>
+          <a href="blog-advice-valise.html" class="card-link" data-i18n="art5_link">Lire l'article →</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-media"><img src="assets/blog/sante.jpg" alt="Santé et assurance avant le départ"></div>
+        <div class="card-body">
+          <div class="card-meta"><span data-i18n="art6_route1">🗓️ Guide pratique</span></div>
+          <h3 data-i18n="art6_title">Santé et assurance avant le départ</h3>
+          <p data-i18n="art6_desc">Trousse de secours, vaccins, assurance voyage : nos conseils pour partir serein et bien protégé.</p>
+          <a href="blog-advice-sante.html" class="card-link" data-i18n="art6_link">Lire l'article →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="strip">
+  <span class="dash"></span>
+  <span data-i18n="strip_text">Voyagez avec foi, découvrez avec le cœur. ✈</span>
+  <span class="dash"></span>
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <div class="footer-logo">
+          <img src="assets/logo.png" alt="S.A.T.V.">
+        </div>
+        <p data-i18n="footer_about_text">Saint Augustin Tourisme &amp; Voyages vous accompagne à travers l'Algérie et au-delà : circuits spirituels et culturels, excursions et séjours sur-mesure, organisés avec sérieux et passion.</p>
+        <div class="social-row">
+          <a href="https://www.facebook.com/share/1EjGeWNXgi/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>
+          <a href="https://www.instagram.com/saintaugustintravel23" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2c2.7 0 3.1 0 4.1.1 1 0 1.7.2 2.3.5.6.2 1.1.6 1.6 1.1.5.5.8.9 1.1 1.6.3.6.4 1.3.5 2.3.1 1 .1 1.4.1 4.1s0 3.1-.1 4.1c0 1-.2 1.7-.5 2.3-.2.6-.6 1.1-1.1 1.6-.5.5-.9.8-1.6 1.1-.6.3-1.3.4-2.3.5-1 .1-1.4.1-4.1.1s-3.1 0-4.1-.1c-1 0-1.7-.2-2.3-.5-.6-.2-1.1-.6-1.6-1.1-.5-.5-.8-.9-1.1-1.6-.3-.6-.4-1.3-.5-2.3C2 15.1 2 14.7 2 12s0-3.1.1-4.1c0-1 .2-1.7.5-2.3.2-.6.6-1.1 1.1-1.6.5-.5.9-.8 1.6-1.1.6-.3 1.3-.4 2.3-.5C8.9 2 9.3 2 12 2zm0 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2a3.2 3.2 0 1 1 0-6.4 3.2 3.2 0 0 1 0 6.4zm5.2-8.4a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z"/></svg></a>
+          <a href="https://wa.me/213551848423" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_links_title">Liens Rapides</h5>
+        <ul>
+          <li><a href="index.html" data-i18n="nav_home">Accueil</a></li>
+          <li><a href="notre-histoire.html" data-i18n="sub_about_1">Notre Histoire</a></li>
+          <li><a href="blog-articles.html" data-i18n="sub_blog_1">Derniers Articles</a></li>
+          <li><a href="localisation.html" data-i18n="sub_contact_1">Nous Contacter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_offers_title">Nos Offres</h5>
+        <ul>
+          <li><a href="circuits-algerie.html" data-i18n="sub_tours_1">Circuits en Algérie</a></li>
+          <li><a href="circuits-international.html" data-i18n="sub_tours_2">Circuits International</a></li>
+          <li><a href="omra.html" data-i18n="sub_tours_3">Omra</a></li><li><a href="decouverte-algerie.html" data-i18n="sub_tours_4">Découverte de l&apos;Algérie</a></li>
+          <li><a href="excursions-interieur.html" data-i18n="sub_exc_1">Excursions</a></li>
+          <li><a href="conditions-tarifs.html" data-i18n="sub_info_2">Conditions &amp; Tarifs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5 data-i18n="footer_contact_title">Contact</h5>
+        <ul>
+          <li>📞 0551 84 84 23 — 0554 67 89 21 — 0669 00 21 18</li>
+          <li>✉️ comercial.staugustin@gmail.com</li>
+          
+          <li>📍 Tour Medibat, Bouni, Annaba</li>
+        </ul>
+        <div class="footer-map">
+          <iframe src="https://www.google.com/maps?q=N%C2%B0+08,+156+logs+MEDITBAT+Tour+A1,+El+Bouni,+Algeria&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Agence Saint Augustin — Bouni, Annaba"></iframe>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© <span class="js-year">2026</span> Saint Augustin Tourisme &amp; Voyages (S.A.T.V.) — <span data-i18n="footer_rights">Tous droits réservés.</span></div>
+      <div data-i18n="footer_made">Site conçu avec ♥ pour les voyageurs curieux</div>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/213551848423" target="_blank" rel="noopener" class="wa-float" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.1c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.1 8.1 0 1 1 12 20.1zm4.5-6.1c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.4.1-.5.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.4 0-.5-.1-.1-.6-1.5-.9-2-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-1 1-1 2.4s1 2.8 1.1 3c.1.2 2 3 4.8 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.4-.3z"/></svg>
+</a>
+
+<script>
+  const pageTranslations = {
+    fr: {
+      hero_eyebrow:"Blog",
+      hero_title:"Derniers Articles",
+      hero_lead:"Conseils pratiques et bonnes astuces pour préparer et réussir votre voyage en toute sérénité.",
+      breadcrumb_articles:"Derniers Articles",
+      sec_kicker:"Récits, conseils & découvertes",
+      sec_title:"Derniers Articles",
+      sec_subtitle:"Nos guides pratiques et nos conseils pour préparer sereinement votre prochaine escapade, de la valise à l'assurance.",
+      art1_place:"Papiers", art1_route1:"🗓️ Guide pratique",
+      art1_title:"Documents et visas : ce qu'il faut préparer",
+      art1_desc:"Passeport, visas, assurance : vérifiez les démarches indispensables pour voyager sans mauvaise surprise.",
+      art1_link:"Lire l'article →",
+      art2_place:"Budget", art2_route1:"🗓️ Guide pratique",
+      art2_title:"Bien gérer son budget de voyage",
+      art2_desc:"Prévoyez dépenses, moyens de paiement et marge de sécurité pour profiter sans stress de votre séjour.",
+      art2_link:"Lire l'article →",
+      art3_place:"Déplacements", art3_route1:"🗓️ Guide pratique",
+      art3_title:"Se déplacer en Algérie sans stress",
+      art3_desc:"Transports, routes, distances : nos conseils pour organiser vos déplacements en toute tranquillité.",
+      art3_link:"Lire l'article →",
+      art4_place:"Astuces", art4_route1:"🗓️ Guide pratique",
+      art4_title:"5 réflexes pour un voyage réussi",
+      art4_desc:"Sécurité, santé, langues locales : de bons réflexes font toute la différence sur la route.",
+      art4_link:"Lire l'article →",
+      art5_place:"Préparation", art5_route1:"🗓️ Guide pratique",
+      art5_title:"Bien préparer sa valise",
+      art5_desc:"Léger mais complet : nos conseils pour ne rien oublier et voyager malin, quelle que soit la destination.",
+      art5_link:"Lire l'article →",
+      art6_place:"Santé", art6_route1:"🗓️ Guide pratique",
+      art6_title:"Santé et assurance avant le départ",
+      art6_desc:"Trousse de secours, vaccins, assurance voyage : nos conseils pour partir serein et bien protégé.",
+      art6_link:"Lire l'article →",
+      footer_made:"Site conçu avec ♥ pour les voyageurs curieux"
+    },
+    en: {
+      hero_eyebrow:"Blog",
+      hero_title:"Latest Articles",
+      hero_lead:"Practical tips and good advice to prepare and make your trip a success, with complete peace of mind.",
+      breadcrumb_articles:"Latest Articles",
+      sec_kicker:"Stories, tips & discoveries",
+      sec_title:"Latest Articles",
+      sec_subtitle:"Our practical guides and advice to calmly prepare your next getaway, from luggage to insurance.",
+      art1_place:"Papers", art1_route1:"🗓️ Practical guide",
+      art1_title:"Documents and visas: what to prepare",
+      art1_desc:"Passport, visas, insurance: check the essential steps to travel without any unpleasant surprises.",
+      art1_link:"Read the article →",
+      art2_place:"Budget", art2_route1:"🗓️ Practical guide",
+      art2_title:"Managing your travel budget well",
+      art2_desc:"Plan expenses, payment methods and a safety margin to enjoy your stay without stress.",
+      art2_link:"Read the article →",
+      art3_place:"Getting around", art3_route1:"🗓️ Practical guide",
+      art3_title:"Getting around Algeria without stress",
+      art3_desc:"Transport, roads, distances: our tips to plan your travel with complete peace of mind.",
+      art3_link:"Read the article →",
+      art4_place:"Tips", art4_route1:"🗓️ Practical guide",
+      art4_title:"5 reflexes for a successful trip",
+      art4_desc:"Safety, health, local languages: good reflexes make all the difference on the road.",
+      art4_link:"Read the article →",
+      art5_place:"Preparation", art5_route1:"🗓️ Practical guide",
+      art5_title:"Packing your luggage well",
+      art5_desc:"Light but complete: our tips to forget nothing and travel smart, whatever the destination.",
+      art5_link:"Read the article →",
+      art6_place:"Health", art6_route1:"🗓️ Practical guide",
+      art6_title:"Health and insurance before departure",
+      art6_desc:"First-aid kit, vaccines, travel insurance: our tips to leave with peace of mind and good protection.",
+      art6_link:"Read the article →",
+      footer_made:"Site designed with ♥ for curious travelers"
+    },
+    ar: {
+      hero_eyebrow:"المدونة",
+      hero_title:"أحدث المقالات",
+      hero_lead:"نصائح عملية وأفضل الخطوات للتحضير لرحلتكم ونجاحها بكل اطمئنان.",
+      breadcrumb_articles:"أحدث المقالات",
+      sec_kicker:"قصص ونصائح واكتشافات",
+      sec_title:"أحدث المقالات",
+      sec_subtitle:"أدلتنا العملية ونصائحنا للتحضير بهدوء لرحلتكم القادمة، من الحقيبة إلى التأمين.",
+      art1_place:"الوثائق", art1_route1:"🗓️ دليل عملي",
+      art1_title:"الوثائق والتأشيرات: ما يجب تحضيره",
+      art1_desc:"جواز السفر والتأشيرات والتأمين: تحققوا من الخطوات الأساسية للسفر دون مفاجآت مزعجة.",
+      art1_link:"اقرأ المزيد ←",
+      art2_place:"الميزانية", art2_route1:"🗓️ دليل عملي",
+      art2_title:"إدارة ميزانية سفركم بشكل جيد",
+      art2_desc:"خططوا للنفقات ووسائل الدفع وهامش الأمان للاستمتاع بإقامتكم دون قلق.",
+      art2_link:"اقرأ المزيد ←",
+      art3_place:"التنقل", art3_route1:"🗓️ دليل عملي",
+      art3_title:"التنقل في الجزائر دون توتر",
+      art3_desc:"النقل والطرق والمسافات: نصائحنا لتنظيم تحركاتكم بكل هدوء.",
+      art3_link:"اقرأ المزيد ←",
+      art4_place:"نصائح", art4_route1:"🗓️ دليل عملي",
+      art4_title:"5 عادات لرحلة ناجحة",
+      art4_desc:"الأمان والصحة واللغات المحلية: عادات جيدة تصنع الفارق على الطريق.",
+      art4_link:"اقرأ المزيد ←",
+      art5_place:"التحضير", art5_route1:"🗓️ دليل عملي",
+      art5_title:"تحضير حقيبة سفركم جيداً",
+      art5_desc:"خفيفة لكن كاملة: نصائحنا لتجنب نسيان أي شيء والسفر بذكاء، أياً كانت الوجهة.",
+      art5_link:"اقرأ المزيد ←",
+      art6_place:"الصحة", art6_route1:"🗓️ دليل عملي",
+      art6_title:"الصحة والتأمين قبل المغادرة",
+      art6_desc:"حقيبة الإسعافات الأولية واللقاحات والتأمين على السفر: نصائحنا للسفر باطمئنان وحماية جيدة.",
+      art6_link:"اقرأ المزيد ←",
+      footer_made:"موقع مصمم بـ ♥ للمسافرين الفضوليين"
+    }
+  };
+</script>
+<script src="assets/site.js?v=20260904150000"></script>
+
+</body>
+</html>

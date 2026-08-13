@@ -1,0 +1,8 @@
+node_modules/
+.env
+src/data/*.db
+src/data/*.sqlite
+src/data/*.db-journal
+uploads/*
+!uploads/.gitkeep
+*.log

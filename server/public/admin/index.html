@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration · Saint Augustin</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ======= LOGIN VIEW ======= -->
+<div id="loginView" class="login-view hidden">
+  <div class="login-card">
+    <div class="login-brand">
+      <img src="../../assets/logo.png" alt="logo">
+      <h1>Saint Augustin</h1>
+      <p>Espace administrateur</p>
+    </div>
+    <div id="loginError" class="form-error hidden"></div>
+    <form id="loginForm">
+      <input id="loginEmail" type="email" placeholder="Email admin" required>
+      <input id="loginPassword" type="password" placeholder="Mot de passe" required>
+      <button type="submit" class="btn-primary">Se connecter</button>
+    </form>
+    <button id="previewBtn" class="btn-ghost" style="width:100%;margin-top:10px">✨ Aperçu du tableau de bord (démo)</button>
+    <p class="login-hint">Première connexion ? Voir <code>server/.env</code> (ADMIN_EMAIL / ADMIN_PASSWORD).</p>
+  </div>
+</div>
+
+<!-- ======= APP VIEW ======= -->
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="side-brand">
+      <img src="../../assets/logo.png" alt="logo">
+      <span>Admin</span>
+    </div>
+    <nav>
+      <a href="#dashboard" data-view="dashboard" class="active">📊 Tableau de bord</a>
+      <a href="#offers" data-view="offers">🧭 Circuits &amp; Excursions</a>
+      <a href="#reservations" data-view="reservations">📋 Réservations</a>
+      <a href="#users" data-view="users">👥 Utilisateurs</a>
+      <a href="#blog" data-view="blog">📝 Blog</a>
+      <a href="#extra" data-view="extra">✨ Extra</a>
+    </nav>
+    <div class="side-user">
+      <div id="adminName">—</div>
+      <button id="changePwBtn" class="btn-ghost" style="margin-bottom:8px;width:100%">🔑 Changer le mot de passe</button>
+      <button id="logoutBtn" class="btn-ghost">Déconnexion</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view">
+      <h2>Tableau de bord</h2>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="split-cols">
+        <div class="panel">
+          <h3>Dernières réservations</h3>
+          <div id="dashReservations"></div>
+        </div>
+        <div class="panel">
+          <h3>Derniers inscrits</h3>
+          <div id="dashUsers"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Offers -->
+    <section id="view-offers" class="view hidden">
+      <div class="view-head">
+        <h2>Circuits &amp; Excursions</h2>
+        <button id="addOfferBtn" class="btn-primary">+ Nouvelle offre</button>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" data-filter="all">Toutes</button>
+        <button class="tab-btn" data-filter="circuit">Circuits</button>
+        <button class="tab-btn" data-filter="excursion">Excursions</button>
+      </div>
+      <div id="offerList" class="offer-list"></div>
+    </section>
+
+    <!-- Reservations -->
+    <section id="view-reservations" class="view hidden">
+      <h2>Réservations</h2>
+      <div class="tabs">
+        <button class="tab-btn active" data-status="all">Toutes</button>
+        <button class="tab-btn" data-status="pending">En attente</button>
+        <button class="tab-btn" data-status="confirmed">Confirmées</button>
+        <button class="tab-btn" data-status="cancelled">Annulées</button>
+      </div>
+      <div id="reservationList"></div>
+    </section>
+
+    <!-- Users -->
+    <section id="view-users" class="view hidden">
+      <div class="view-head">
+        <h2>Utilisateurs &amp; Comptes</h2>
+        <button id="addUserBtn" class="btn-primary">+ Nouvel utilisateur</button>
+      </div>
+      <div id="userList"></div>
+    </section>
+
+    <!-- Blog -->
+    <section id="view-blog" class="view hidden">
+      <div class="view-head">
+        <h2>Articles de blog</h2>
+        <button id="addPostBtn" class="btn-primary">+ Nouvel article</button>
+      </div>
+      <div id="postList"></div>
+    </section>
+
+    <!-- Extra -->
+    <section id="view-extra" class="view hidden">
+      <h2>Extra — contenu du site</h2>
+      <p class="muted">Ces blocs libres sont enregistrés dans la base et peuvent être affichés où vous voulez sur le site.</p>
+      <div id="extraForm" class="panel"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Titre</h3><button id="modalClose" class="close">×</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
