@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin panel - tell Google not to index it
+Disallow: /admin
+Disallow: /api
+
+# Your live sitemap (replace with your real domain)
+Sitemap: https://votre-domaine.up.railway.app/sitemap.xml

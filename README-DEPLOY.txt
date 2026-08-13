@@ -1,54 +1,70 @@
-DEPLOYING THE PUBLIC SITE TO VERCEL (from GitHub)
-==================================================
+DEPLOYING SITE + ADMIN TO RAILWAY (from GitHub)
+================================================
 
-WHAT WORKS ON VERCEL:
-  - The PUBLIC WEBSITE (all .html pages). Deploys free and easily.
-
-WHAT CANNOT RUN ON VERCEL:
-  - The ADMIN PANEL. It needs a live backend + database (Vercel
-    serverless storage cannot persist data, login, or uploads).
-  - Keep using the ADMIN locally for now (see below).
+This project now runs the FULL stack on Railway (public site + backend
++ admin panel). It is deployed from the GitHub repo
+  https://github.com/ahmedmeskache/agance-de-voyage-st-augustin-
 
 -----------------------------------------------
-STEP 1 - Put the project on GitHub
+WHY IT FAILED BEFORE (npm: not found, exit 127)
 -----------------------------------------------
-Open Command Prompt in the project folder and run:
-
-  git init
-  git add -A
-  git commit -m "Initial commit"
-  git branch -M main
-  git remote add origin https://github.com/YOUR_NAME/YOUR_REPO.git
-  git push -u origin main
-
-(The .gitignore automatically excludes node_modules, the database,
-uploads, and server/.env - so no secrets are uploaded.)
+Railway uses Nixpacks, which only enables Node/npm when it finds a
+package.json at the PROJECT ROOT. The backend lived in server/ with no
+root package.json, so npm was never installed.
+FIXED BY: adding root package.json + railway.json (see those files).
+DO NOT DELETE THEM.
 
 -----------------------------------------------
-STEP 2 - Connect to Vercel
+HOW RAILWAY RUNS IT
 -----------------------------------------------
-1. Go to vercel.com and sign in (with GitHub).
-2. Click "New Project" -> Import your GitHub repo.
-3. Vercel auto-detects it as a static site (vercel.json included).
-4. Click "Deploy". Done.
-
-Your public site is now live at a URL like:
-  https://your-project.vercel.app
+- Build  : npm install --prefix server   (installs backend deps)
+- Start  : npm --prefix server start     (runs node server/src/server.js)
+- Port   : reads process.env.PORT (Railway sets it automatically)
+- Config : railway.json
 
 -----------------------------------------------
-THE ADMIN PANEL (localhost)
+DEPLOYMENT CHECKLIST (do once, then every push auto-deploys)
 -----------------------------------------------
-Admin must run on a real server. On your computer:
+1. Set these Variables in the Railway service (Variables tab):
+     JWT_SECRET       -> a long random string (mandatory)
+     ADMIN_EMAIL      -> admin@satv.dz
+     ADMIN_PASSWORD   -> your strong login password
+     ADMIN_NAME       -> Administrateur
+2. Your live URLs:
+     Site   : https://your-app.up.railway.app
+     Admin  : https://your-app.up.railway.app/admin
+3. Find the real URL in Railway: Deployments tab / Settings > Networking.
 
-  1. Double-click  Start-Admin.cmd
-  2. Keep its black window OPEN.
-  3. Browser opens http://localhost:3000/admin
-  4. Login:  admin@satv.dz   /   bv0vQwe8dh14nf&
-  5. Change the password after first login.
+-----------------------------------------------
+IMPORTANT: YOUR REAL DOMAIN (for Google search)
+-----------------------------------------------
+Before going live publicly, replace the placeholder domain
+  https://votre-domaine.up.railway.app
+with your REAL URL in these two files:
+  - sitemap.xml
+  - robots.txt
+Then submit sitemap.xml to Google Search Console.
 
 -----------------------------------------------
-IF YOU WANT THE ADMIN ONLINE TOO
+GETTING ON GOOGLE SEARCH (SEO)
 -----------------------------------------------
-Upload the SAME repo to Railway or Render (railway.app / render.com),
-start command: node src/server.js, working dir: server.
-Then admin is at https://yourapp.up.railway.app/admin.
+1. Deploy must succeed (check Deployments tab).
+2. Go to https://search.google.com/search-console and add your domain.
+3. Verify it (HTML meta tag method - paste a line into index.html).
+4. Submit your sitemap:  https://your-app.up.railway.app/sitemap.xml
+5. Wait days-to-weeks for Google to index (Search Console "Request Indexing").
+
+-----------------------------------------------
+KNOWN LIMIT (IMPORTANT BEFORE SELLING)
+-----------------------------------------------
+SQLite stores data in a local file. On Railway the file resets whenever
+the app restarts (esp. free tier), so offers/reservations you add in the
+admin can disappear. For a reliable production launch, the backend must
+use a persistent database (e.g. Railway-managed Postgres). This code is
+currently SQLite-only.
+
+-----------------------------------------------
+ADMIN LOGIN (local and after deploy)
+-----------------------------------------------
+Login: admin@satv.dz / your ADMIN_PASSWORD
+(If ADMIN_PASSWORD not set, default is admin123456 - CHANGE IT.)
