@@ -4,8 +4,7 @@
     "builder": "NIXPACKS",
     "buildCommand": "npm install --prefix server",
     "watchPatterns": [
-      "server/**",
-      "package.json"
+      "**/*"
     ]
   },
   "deploy": {
