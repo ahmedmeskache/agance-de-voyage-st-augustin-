@@ -6,4 +6,4 @@ Disallow: /admin
 Disallow: /api
 
 # Your live sitemap (replace with your real domain)
-Sitemap: https://votre-domaine.up.railway.app/sitemap.xml
+Sitemap: https://agance-de-voyage-st-augustin-production.up.railway.app/sitemap.xml
