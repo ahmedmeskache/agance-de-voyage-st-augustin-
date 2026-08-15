@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import db from '../db.js';
 import { contentRequired, authRequired } from '../middleware/auth.js';
 import { translateFields } from '../translate.js';
+import { retranslateOffer } from '../retranslate.js';
 
 const router = Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -145,6 +146,22 @@ router.put('/:id', contentRequired, upload, async (req, res) => {
     offer.id
   );
   return res.json(db.prepare('SELECT * FROM offers WHERE id = ?').get(offer.id));
+});
+
+// POST /api/offers/:id/retranslate (admin) — re-fill EN/AR text
+router.post('/:id/retranslate', contentRequired, async (req, res) => {
+  try {
+    const force = !!(req.body && req.body.force);
+    const r = await retranslateOffer(req.params.id, force);
+    if (!r) return res.status(404).json({ error: 'Offre introuvable.' });
+    return res.json({
+      ok: true,
+      translated: r.translated,
+      offer: db.prepare('SELECT * FROM offers WHERE id = ?').get(req.params.id),
+    });
+  } catch (err) {
+    return res.status(502).json({ error: 'Service de traduction indisponible. Réessayez plus tard.' });
+  }
 });
 
 // DELETE /api/offers/:id (admin)

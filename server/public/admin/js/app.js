@@ -222,6 +222,7 @@ function renderOffers() {
         </div>
         <div class="oc-actions">
           <button class="btn-sm" onclick="openOfferForm(${o.id})">Modifier</button>
+          <button class="btn-sm" onclick="retranslateOffer(${o.id})" title="Re-traduire les champs manquants ou incorrects">↻ Traduire</button>
           <button class="btn-sm ${o.active ? 'gray' : 'green'}" onclick="toggleOffer(${o.id})">${o.active ? 'Masquer' : 'Publier'}</button>
           <button class="btn-sm red" onclick="deleteOffer(${o.id})">Supprimer</button>
         </div>
@@ -246,6 +247,30 @@ async function deleteOffer(id) {
   if (!confirm('Supprimer cette offre ?')) return;
   await API.del(`/offers/${id}`);
   await loadOffers();
+}
+
+// Re-translate one offer (only missing/broken fields — manual ones are kept).
+async function retranslateOffer(id) {
+  if (!confirm('Re-traduire cette offre (EN/AR) ? Les traductions déjà correctes seront conservées.')) return;
+  try {
+    const r = await API.post(`/offers/${id}/retranslate`);
+    await loadOffers();
+    alert(r.translated.length
+      ? `Offre re-traduite : ${r.translated.join(', ')}`
+      : 'Cette offre est déjà traduite (ou la traduction est indisponible).');
+  } catch (err) { alert(err.message); }
+}
+
+// Force re-translation of every offer (overwrites manual translations too).
+async function retranslateAllOffers() {
+  if (!confirm('Re-traduire TOUTES les offres ? Attention : cela écrase aussi les traductions saisies manuellement.')) return;
+  const list = offersCache.filter(o => o.name || o.details || o.program);
+  let done = 0;
+  for (const o of list) {
+    try { await API.post(`/offers/${o.id}/retranslate`, { force: true }); done++; } catch (_) {}
+  }
+  await loadOffers();
+  alert(`${done}/${list.length} offres re-traduites.`);
 }
 
 function parseProgramSteps(text) {
@@ -649,6 +674,7 @@ function renderPosts() {
       </div>
       <div class="post-actions">
         <button class="btn-sm" onclick="openPostForm(${p.id})">Modifier</button>
+        <button class="btn-sm" onclick="retranslatePost(${p.id})" title="Re-traduire les champs manquants ou incorrects">↻ Traduire</button>
         <button class="btn-sm ${p.active ? 'gray' : 'green'}" onclick="togglePost(${p.id})">${p.active ? 'Masquer' : 'Publier'}</button>
         <button class="btn-sm red" onclick="deletePost(${p.id})">Supprimer</button>
       </div>
@@ -665,6 +691,30 @@ async function deletePost(id) {
   if (!confirm('Supprimer cet article ?')) return;
   await API.del(`/blog/${id}`);
   await loadBlog();
+}
+
+// Re-translate one article (only missing/broken fields — manual ones are kept).
+async function retranslatePost(id) {
+  if (!confirm('Re-traduire cet article (EN/AR) ? Les traductions déjà correctes seront conservées.')) return;
+  try {
+    const r = await API.post(`/blog/${id}/retranslate`);
+    await loadBlog();
+    alert(r.translated.length
+      ? `Article re-traduit : ${r.translated.join(', ')}`
+      : 'Cet article est déjà traduit (ou la traduction est indisponible).');
+  } catch (err) { alert(err.message); }
+}
+
+// Force re-translation of every article (overwrites manual translations too).
+async function retranslateAllPosts() {
+  if (!confirm('Re-traduire TOUS les articles ? Attention : cela écrase aussi les traductions saisies manuellement.')) return;
+  const list = postsCache.filter(p => p.title || p.excerpt || p.content);
+  let done = 0;
+  for (const p of list) {
+    try { await API.post(`/blog/${p.id}/retranslate`, { force: true }); done++; } catch (_) {}
+  }
+  await loadBlog();
+  alert(`${done}/${list.length} articles re-traduits.`);
 }
 
 function openPostForm(id) {
@@ -779,5 +829,7 @@ $('#modal').addEventListener('click', (e) => { if (e.target === $('#modal')) clo
 $('#addOfferBtn').addEventListener('click', () => openOfferForm(null));
 $('#addPostBtn').addEventListener('click', () => openPostForm(null));
 $('#addUserBtn').addEventListener('click', () => openUserForm(null));
+$('#retranslateAllOffersBtn').addEventListener('click', () => retranslateAllOffers());
+$('#retranslateAllPostsBtn').addEventListener('click', () => retranslateAllPosts());
 route();
 

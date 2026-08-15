@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import db from '../db.js';
 import { contentRequired, authRequired } from '../middleware/auth.js';
 import { translateFields } from '../translate.js';
+import { retranslatePost } from '../retranslate.js';
 
 const router = Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -114,6 +115,22 @@ router.put('/:id', contentRequired, upload.single('image'), async (req, res) => 
     post.id
   );
   return res.json(db.prepare('SELECT * FROM posts WHERE id = ?').get(post.id));
+});
+
+// Admin re-translate (fills missing/failed EN/AR text; force = overwrite all)
+router.post('/:id/retranslate', contentRequired, async (req, res) => {
+  try {
+    const force = !!(req.body && req.body.force);
+    const r = await retranslatePost(req.params.id, force);
+    if (!r) return res.status(404).json({ error: 'Article introuvable.' });
+    return res.json({
+      ok: true,
+      translated: r.translated,
+      post: db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id),
+    });
+  } catch (err) {
+    return res.status(502).json({ error: 'Service de traduction indisponible. Réessayez plus tard.' });
+  }
 });
 
 // Admin delete

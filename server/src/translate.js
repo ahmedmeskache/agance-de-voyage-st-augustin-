@@ -26,11 +26,15 @@ function isFailure(out) {
   return FAIL_MARKERS.some((m) => low.includes(m));
 }
 
+// An optional email registered at mymemory.translated.net raises the free
+// daily quota dramatically (set MYMEMORY_EMAIL in server/.env).
+const MYMEMORY_EMAIL = process.env.MYMEMORY_EMAIL ? `&de=${encodeURIComponent(process.env.MYMEMORY_EMAIL)}` : '';
+
 async function translateChunk(text, to) {
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const q = encodeURIComponent(text);
-      const url = `https://api.mymemory.translated.net/get?q=${q}&langpair=fr|${to}`;
+      const url = `https://api.mymemory.translated.net/get?q=${q}&langpair=fr|${to}${MYMEMORY_EMAIL}`;
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 7000);
       const res = await fetch(url, { signal: controller.signal });

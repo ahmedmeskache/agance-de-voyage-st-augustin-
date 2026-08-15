@@ -75,7 +75,10 @@
     <section id="view-offers" class="view hidden">
       <div class="view-head">
         <h2>Circuits &amp; Excursions</h2>
-        <button id="addOfferBtn" class="btn-primary">+ Nouvelle offre</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="retranslateAllOffersBtn" class="btn-sm gray" title="Re-traduire toutes les offres (Écrasera les traductions manuelles)">↻ Tout retraduire</button>
+          <button id="addOfferBtn" class="btn-primary">+ Nouvelle offre</button>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-filter="all">Toutes</button>
@@ -110,7 +113,10 @@
     <section id="view-blog" class="view hidden">
       <div class="view-head">
         <h2>Articles de blog</h2>
-        <button id="addPostBtn" class="btn-primary">+ Nouvel article</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="retranslateAllPostsBtn" class="btn-sm gray" title="Re-traduire tous les articles (Écrasera les traductions manuelles)">↻ Tout retraduire</button>
+          <button id="addPostBtn" class="btn-primary">+ Nouvel article</button>
+        </div>
       </div>
       <div id="postList"></div>
     </section>

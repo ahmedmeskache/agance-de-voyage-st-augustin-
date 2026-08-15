@@ -158,9 +158,11 @@ async function backfillTranslations() {
       const sets = [];
       const vals = [];
       for (const [key, r] of Object.entries(map)) {
+        if (!r.en) continue; // translation failed -> keep existing value
         sets.push(`${key}_en = ?`, `${key}_ar = ?`);
         vals.push(r.en || null, r.ar || null);
       }
+      if (!sets.length) continue;
       vals.push(p.id);
       db.prepare(`UPDATE posts SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
       console.log(`[backfill] Article #${p.id} traduit : ${fields.map((f) => f.key).join(', ')}`);
@@ -176,9 +178,11 @@ async function backfillTranslations() {
       const sets = [];
       const vals = [];
       for (const [key, r] of Object.entries(map)) {
+        if (!r.en) continue; // translation failed -> keep existing value
         sets.push(`${key}_en = ?`, `${key}_ar = ?`);
         vals.push(r.en || null, r.ar || null);
       }
+      if (!sets.length) continue;
       vals.push(o.id);
       db.prepare(`UPDATE offers SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
       console.log(`[backfill] Offre #${o.id} traduite : ${fields.map((f) => f.key).join(', ')}`);
