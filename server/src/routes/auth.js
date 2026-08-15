@@ -150,6 +150,10 @@ router.post('/admin/login', (req, res) => {
   if (!user || !user.password_hash || !bcrypt.compareSync(password || '', user.password_hash)) {
     return res.status(401).json({ error: 'Identifiants admin incorrects.' });
   }
+  // Only admins and managers may access the admin panel.
+  if (user.role !== 'admin' && user.role !== 'manager') {
+    return res.status(403).json({ error: 'Votre compte n\'a pas les droits administrateur.' });
+  }
   return res.json({ token: signToken({ id: user.id, role: user.role }), user: publicUser(user) });
 });
 

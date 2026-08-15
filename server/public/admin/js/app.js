@@ -44,6 +44,16 @@ if (API.token) {
   $('#adminName').textContent = __currentRole.charAt(0).toUpperCase() + __currentRole.slice(1);
   applyRoleRestrictions();
   loadDashboard();
+  // fetch the real user (name/role) so the sidebar is correct after a refresh
+  API.get('/auth/me').then(d => {
+    const u = d.user || {};
+    __currentUserId = u.id ?? __currentUserId;
+    __currentRole = u.role || __currentRole;
+    if (u.name) $('#adminName').textContent = u.name.charAt(0).toUpperCase() + u.name.slice(1);
+    const roleLabel = __currentRole === 'admin' ? 'Administrateur' : (__currentRole === 'manager' ? 'Manager' : 'Utilisateur');
+    $('#adminRole').textContent = '👤 ' + roleLabel;
+    applyRoleRestrictions();
+  }).catch(() => {});
 } else {
   showLogin();
 }
@@ -62,7 +72,9 @@ $('#loginForm').addEventListener('submit', async (e) => {
     API.token = data.token;
     __currentUserId = data.user.id;
     __currentRole = data.user.role;
-    $('#adminName').textContent = __currentRole.charAt(0).toUpperCase() + __currentRole.slice(1);
+    $('#adminName').textContent = (data.user.name || __currentRole).charAt(0).toUpperCase() + (data.user.name || __currentRole).slice(1);
+    const roleLabel = __currentRole === 'admin' ? 'Administrateur' : (__currentRole === 'manager' ? 'Manager' : 'Utilisateur');
+    $('#adminRole').textContent = '👤 ' + roleLabel;
     errBox.classList.add('hidden');
     showApp();
     applyRoleRestrictions();
@@ -103,6 +115,38 @@ $('#changePwBtn').addEventListener('click', () => {
       alert('Mot de passe modifié ✓ Connectez-vous à nouveau.');
       API.token = null;
       showLogin();
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+});
+
+// ---------- Change username (name / email) ----------
+$('#changeNameBtn').addEventListener('click', async () => {
+  let me = {};
+  try { me = (await API.get('/auth/me'))?.user || {}; } catch (_) {}
+  openModal('Changer le nom d\'utilisateur', `
+    <div class="form-grid">
+      <div class="form-field full"><label>Nom</label><input id="un_name" value="${esc(me.name || '')}" placeholder="Votre nom"></div>
+      <div class="form-field full"><label>Email</label><input id="un_email" type="email" value="${esc(me.email || '')}" placeholder="Votre email"></div>
+      <div class="form-field full"><label>Téléphone</label><input id="un_phone" value="${esc(me.phone || '')}" placeholder="055..."></div>
+    </div>
+    <div class="form-row">
+      <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" id="saveNameBtn">Enregistrer</button>
+    </div>`);
+  $('#saveNameBtn').addEventListener('click', async () => {
+    const payload = {
+      name: $('#un_name').value.trim(),
+      email: $('#un_email').value.trim(),
+      phone: $('#un_phone').value.trim(),
+    };
+    if (!payload.name || !payload.email) return alert('Nom et email requis.');
+    try {
+      await API.put('/auth/me', payload);
+      closeModal();
+      $('#adminName').textContent = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
+      alert('Nom d\'utilisateur mis à jour ✓');
     } catch (err) {
       alert(err.message);
     }
