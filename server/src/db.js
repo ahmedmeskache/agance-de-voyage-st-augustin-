@@ -78,6 +78,8 @@ CREATE TABLE IF NOT EXISTS reservations (
   contact_phone TEXT,
   travel_date TEXT,
   people      INTEGER,
+  adults      INTEGER,
+  children    INTEGER,
   message     TEXT,
   status      TEXT    NOT NULL DEFAULT 'pending',   -- pending | confirmed | cancelled
   created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
@@ -155,6 +157,15 @@ if (!postCols.includes('content_en')) {
 }
 if (!postCols.includes('content_ar')) {
   db.exec(`ALTER TABLE posts ADD COLUMN content_ar TEXT;`);
+}
+
+// Reservation adults/children (kept alongside the legacy `people` total).
+const resCols = db.prepare(`PRAGMA table_info(reservations)`).all().map(c => c.name);
+if (!resCols.includes('adults')) {
+  db.exec(`ALTER TABLE reservations ADD COLUMN adults INTEGER;`);
+}
+if (!resCols.includes('children')) {
+  db.exec(`ALTER TABLE reservations ADD COLUMN children INTEGER;`);
 }
 
 export default db;

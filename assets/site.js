@@ -62,6 +62,7 @@ const siteTranslations = {
     book_first_l:"Prénom", book_first_ph:"Votre prénom",
     book_start_l:"Date de départ", book_return_l:"Date de retour",
     book_persons_l:"Nombre de personnes",
+    book_adults_l:"Adultes", book_children_l:"Enfants",
     book_email_l:"Email", book_email_ph:"vous@exemple.com",
     book_phone_l:"Téléphone", book_phone_ph:"06 XX XX XX XX",
     book_submit:"Envoyer ma demande de réservation",
@@ -105,6 +106,7 @@ const siteTranslations = {
     book_first_l:"First name", book_first_ph:"Your first name",
     book_start_l:"Start date", book_return_l:"Return date",
     book_persons_l:"Number of people",
+    book_adults_l:"Adults", book_children_l:"Children",
     book_email_l:"Email", book_email_ph:"you@example.com",
     book_phone_l:"Phone", book_phone_ph:"06 XX XX XX XX",
     book_submit:"Send my booking request",
@@ -148,6 +150,7 @@ const siteTranslations = {
     book_first_l:"اللقب", book_first_ph:"لقبك",
     book_start_l:"تاريخ الانطلاق", book_return_l:"تاريخ العودة",
     book_persons_l:"عدد الأشخاص",
+    book_adults_l:"بالغون", book_children_l:"أطفال",
     book_email_l:"البريد الإلكتروني", book_email_ph:"you@example.com",
     book_phone_l:"الهاتف", book_phone_ph:"06 XX XX XX XX",
     book_submit:"إرسال طلب الحجز",
@@ -698,9 +701,15 @@ document.addEventListener('DOMContentLoaded', function(){
           <label for="bookPhone" data-i18n="book_phone_l">Téléphone</label>
           <input type="tel" id="bookPhone" name="phone" required placeholder="06 XX XX XX XX" data-i18n-placeholder="book_phone_ph">
         </div>
-        <div class="field">
-          <label for="bookPersons" data-i18n="book_persons_l">Nombre de personnes</label>
-          <input type="number" id="bookPersons" name="persons" min="1" max="99" value="1" required>
+        <div class="card-row">
+          <div class="field">
+            <label for="bookAdults" data-i18n="book_adults_l">Adultes</label>
+            <input type="number" id="bookAdults" name="adults" min="1" max="99" value="1" required>
+          </div>
+          <div class="field">
+            <label for="bookChildren" data-i18n="book_children_l">Enfants</label>
+            <input type="number" id="bookChildren" name="children" min="0" max="99" value="0">
+          </div>
         </div>
 
         <button type="submit" class="btn btn-pay" data-i18n="book_submit">Envoyer ma demande de réservation</button>
@@ -740,11 +749,16 @@ document.addEventListener('DOMContentLoaded', function(){
     var btn = form.querySelector('button[type="submit"]');
     if (btn){ btn.disabled = true; }
 
+    var adults = form.bookAdults ? Number(form.bookAdults.value || 1) : 1;
+    var children = form.bookChildren ? Number(form.bookChildren.value || 0) : 0;
+
     var payload = {
       offer_name: lastBookItem || t('book_item_default'),
       type: 'circuit',
       travel_date: form.bookStart ? form.bookStart.value : '',
-      people: form.bookPersons ? Number(form.bookPersons.value || 1) : 1,
+      adults: adults,
+      children: children,
+      people: adults + children,
       contact_name: ((form.bookFirst ? form.bookFirst.value : '') + ' ' + (form.bookLast ? form.bookLast.value : '')).trim(),
       contact_email: form.bookEmail ? form.bookEmail.value : '',
       contact_phone: form.bookPhone ? form.bookPhone.value : '',

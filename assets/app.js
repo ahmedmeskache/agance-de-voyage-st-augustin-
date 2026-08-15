@@ -165,9 +165,10 @@
         <input id="res_offer" value="${esc(offerName || '')}" style="padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
           <div><label style="font-size:13px;font-weight:600">Date souhaitée</label><input id="res_date" type="date" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
-          <div><label style="font-size:13px;font-weight:600">Personnes</label><input id="res_people" type="number" min="1" value="2" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
+          <div><label style="font-size:13px;font-weight:600">Adultes</label><input id="res_adults" type="number" min="1" value="1" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
+          <div><label style="font-size:13px;font-weight:600">Enfants</label><input id="res_children" type="number" min="0" value="0" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
+          <div><label style="font-size:13px;font-weight:600">Téléphone</label><input id="res_phone" placeholder="Votre téléphone" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
         </div>
-        <div><label style="font-size:13px;font-weight:600">Téléphone</label><input id="res_phone" placeholder="Votre téléphone" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px"></div>
         <div><label style="font-size:13px;font-weight:600">Message</label><textarea id="res_msg" placeholder="Vos souhaits, dates flexibles…" style="width:100%;padding:11px;border:1px solid #e3dccb;border-radius:8px;font-size:14px;margin-top:4px;min-height:70px"></textarea></div>
         <button id="resSubmit" style="background:#122a4d;color:#fff;border:none;padding:13px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer">Envoyer ma demande</button>
       </div>
@@ -178,11 +179,15 @@
     m.querySelector('#resSubmit').addEventListener('click', async () => {
       const errBox = m.querySelector('#resErr');
       errBox.style.display = 'none';
+      const adults = parseInt(m.querySelector('#res_adults').value, 10) || 1;
+      const children = parseInt(m.querySelector('#res_children').value, 10) || 0;
       const payload = {
         offer_name: m.querySelector('#res_offer').value.trim(),
         type: offerName ? guessType(offerName) : (document.body.classList.contains('excursions') ? 'excursion' : 'circuit'),
         travel_date: m.querySelector('#res_date').value,
-        people: parseInt(m.querySelector('#res_people').value, 10) || 1,
+        adults,
+        children,
+        people: adults + children,
         contact_phone: m.querySelector('#res_phone').value.trim(),
         message: m.querySelector('#res_msg').value.trim(),
       };

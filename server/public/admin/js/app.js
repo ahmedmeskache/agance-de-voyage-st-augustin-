@@ -490,12 +490,20 @@ async function loadReservations() {
   renderReservations(list);
 }
 
+function peopleLabel(r) {
+  if (r.adults !== null && r.adults !== undefined && r.children !== null && r.children !== undefined) {
+    return (r.adults > 0 ? r.adults + ' adulte' + (r.adults > 1 ? 's' : '') : '') +
+      (r.children > 0 ? (r.adults > 0 ? ' · ' : '') + r.children + ' enfant' + (r.children > 1 ? 's' : '') : '');
+  }
+  return r.people ? r.people + ' pers.' : '';
+}
+
 function renderReservations(list) {
   $('#reservationList').innerHTML = list.length ? list.map(r => `
     <div class="res-item">
       <div class="res-info">
         <h4>${esc(r.offer_name)} <span class="status-pill ${esc(r.status)}">${esc(r.status)}</span></h4>
-        <div class="muted">${esc(r.type || '')}${r.travel_date ? ' · ' + esc(r.travel_date) : ''}${r.people ? ' · ' + r.people + ' pers.' : ''}</div>
+        <div class="muted">${esc(r.type || '')}${r.travel_date ? ' · ' + esc(r.travel_date) : ''}${peopleLabel(r) ? ' · ' + esc(peopleLabel(r)) : ''}</div>
         <div class="res-detail">
           <strong>${esc(r.contact_name || '')}</strong>${r.contact_email ? ' · ' + esc(r.contact_email) : ''}${r.contact_phone ? ' · ' + esc(r.contact_phone) : ''}
           ${r.message ? '<br>« ' + esc(r.message) + ' »' : ''}

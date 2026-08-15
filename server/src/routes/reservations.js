@@ -6,14 +6,19 @@ const router = Router();
 
 // Client creates a reservation (must be logged in)
 router.post('/', authRequired, (req, res) => {
-  const { offer_id, offer_name, type, travel_date, people, message, contact_name, contact_email, contact_phone } = req.body || {};
+  const { offer_id, offer_name, type, travel_date, people, adults, children, message, contact_name, contact_email, contact_phone } = req.body || {};
   if (!offer_name) return res.status(400).json({ error: 'Veuillez préciser l\'offre souhaitée.' });
+
+  const nAdults = Number(adults) >= 0 ? Number(adults) : null;
+  const nChildren = Number(children) >= 0 ? Number(children) : null;
+  const total = (nAdults !== null ? nAdults : 0) + (nChildren !== null ? nChildren : 0);
+  const nPeople = Number(people) >= 0 ? Number(people) : (total || null);
 
   const u = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
   const info = db.prepare(
     `INSERT INTO reservations
-       (user_id, offer_id, offer_name, type, contact_name, contact_email, contact_phone, travel_date, people, message, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`
+       (user_id, offer_id, offer_name, type, contact_name, contact_email, contact_phone, travel_date, people, adults, children, message, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`
   ).run(
     req.user.id,
     offer_id || null,
@@ -23,7 +28,9 @@ router.post('/', authRequired, (req, res) => {
     contact_email || (u && u.email) || null,
     contact_phone || (u && u.phone) || null,
     travel_date || null,
-    people || null,
+    nPeople,
+    nAdults,
+    nChildren,
     message || null
   );
   return res.status(201).json({ ok: true, id: info.lastInsertRowid });
