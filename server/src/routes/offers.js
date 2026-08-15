@@ -65,7 +65,9 @@ router.get('/:id', (req, res) => {
 
 // Auto-translate French text -> EN and AR, return an object with the
 // *_en / *_ar values to store. Falls back to null if translation not needed.
-async function buildTranslations(fr) {
+// Manual translations provided in `overrides` are always used verbatim;
+// auto-translation only kicks in for fields left empty.
+async function buildTranslations(fr, overrides = {}) {
   const fields = [];
   if (fr.name) fields.push({ key: 'name', value: fr.name });
   if (fr.details) fields.push({ key: 'details', value: fr.details });
@@ -74,8 +76,10 @@ async function buildTranslations(fr) {
   const map = await translateFields(fields);
   const out = {};
   for (const [key, val] of Object.entries(map)) {
-    out[`${key}_en`] = val.en;
-    out[`${key}_ar`] = val.ar;
+    const en = overrides[`${key}_en`];
+    const ar = overrides[`${key}_ar`];
+    out[`${key}_en`] = (en && String(en).trim()) ? String(en).trim() : val.en;
+    out[`${key}_ar`] = (ar && String(ar).trim()) ? String(ar).trim() : val.ar;
   }
   return out;
 }
@@ -88,7 +92,7 @@ router.post('/', contentRequired, upload, async (req, res) => {
   const image_en = imgField(req, 'image_en', image_en_url);
   const image_ar = imgField(req, 'image_ar', image_ar_url);
   // Auto-translate name/details/program from French into EN and AR.
-  const tr = await buildTranslations({ name, details, program });
+  const tr = await buildTranslations({ name, details, program }, req.body);
   const info = db.prepare(
     `INSERT INTO offers (type, page, name, category, details, program, price, duration, tags, image, image_en, image_ar, name_en, name_ar, details_en, details_ar, program_en, program_ar, active)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -115,7 +119,7 @@ router.put('/:id', contentRequired, upload, async (req, res) => {
   const details = b.details !== undefined ? b.details : offer.details;
   const program = b.program !== undefined ? b.program : offer.program;
   // Re-translate from the (French/base) source fields whenever they change.
-  const tr = await buildTranslations({ name, details, program });
+  const tr = await buildTranslations({ name, details, program }, b);
   db.prepare(
     `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, tags=?, image=?, image_en=?, image_ar=?, name_en=?, name_ar=?, details_en=?, details_ar=?, program_en=?, program_ar=?, active=? WHERE id=?`
   ).run(

@@ -55,6 +55,12 @@ CREATE TABLE IF NOT EXISTS posts (
   excerpt     TEXT,
   content     TEXT,
   image       TEXT,
+  title_en    TEXT,
+  title_ar    TEXT,
+  excerpt_en  TEXT,
+  excerpt_ar  TEXT,
+  content_en  TEXT,
+  content_ar  TEXT,
   active      INTEGER NOT NULL DEFAULT 1,
   created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
@@ -122,6 +128,25 @@ if (!offersCols.includes('tags')) {
 const postCols = db.prepare(`PRAGMA table_info(posts)`).all().map(c => c.name);
 if (!postCols.includes('tags')) {
   db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT;`);
+}
+// Blog per-language text (auto-translated from French at save time)
+if (!postCols.includes('title_en')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN title_en TEXT;`);
+}
+if (!postCols.includes('title_ar')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN title_ar TEXT;`);
+}
+if (!postCols.includes('excerpt_en')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN excerpt_en TEXT;`);
+}
+if (!postCols.includes('excerpt_ar')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN excerpt_ar TEXT;`);
+}
+if (!postCols.includes('content_en')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN content_en TEXT;`);
+}
+if (!postCols.includes('content_ar')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN content_ar TEXT;`);
 }
 
 export default db;

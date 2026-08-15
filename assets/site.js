@@ -46,7 +46,8 @@ const siteTranslations = {
     detail_reserve:"Réserver cet itinéraire",
     quiz_match:"Correspondance :", quiz_recommended:"Destination recommandée",
     quiz_result_title:"Vos meilleures destinations", quiz_detail:"Voir les détails", quiz_book:"Réserver",
-    quiz_title:"Trouvez votre destination idéale", quiz_back:"← Précédent", quiz_restart:"Recommencer ↺", quiz_progress:"Question"
+    quiz_title:"Trouvez votre destination idéale", quiz_back:"← Précédent", quiz_restart:"Recommencer ↺", quiz_progress:"Question",
+    blog_read:"Lire l'article →"
   },
   en: {
     nav_home:"Home", nav_excursions:"Our Excursions", nav_tours:"Our Tours",
@@ -88,7 +89,8 @@ const siteTranslations = {
     detail_reserve:"Book this itinerary",
     quiz_match:"Match:", quiz_recommended:"Recommended destination",
     quiz_result_title:"Your best destinations", quiz_detail:"View details", quiz_book:"Book",
-    quiz_title:"Find your ideal destination", quiz_back:"← Back", quiz_restart:"Restart ↺", quiz_progress:"Question"
+    quiz_title:"Find your ideal destination", quiz_back:"← Back", quiz_restart:"Restart ↺", quiz_progress:"Question",
+    blog_read:"Read the article →"
   },
   ar: {
     nav_home:"الرئيسية", nav_excursions:"رحلاتنا", nav_tours:"جولاتنا",
@@ -130,7 +132,8 @@ const siteTranslations = {
     detail_reserve:"احجز هذه الرحلة",
     quiz_match:"التوافق:", quiz_recommended:"الوجهة الموصى بها",
     quiz_result_title:"أفضل الوجهات لك", quiz_detail:"عرض التفاصيل", quiz_book:"احجز",
-    quiz_title:"اعثر على وجهتك المثالية", quiz_back:"→ السابق", quiz_restart:"إعادة ↺", quiz_progress:"السؤال"
+    quiz_title:"اعثر على وجهتك المثالية", quiz_back:"→ السابق", quiz_restart:"إعادة ↺", quiz_progress:"السؤال",
+    blog_read:"اقرأ المقال ←"
   }
 };
 

@@ -17,26 +17,61 @@
     return txt.length > n ? txt.slice(0, n).replace(/\s+\S*$/, '') + '…' : txt;
   }
 
+  // Look up a translated UI string from the site's language dictionaries.
+  function lbl(key) {
+    try {
+      var lang = window.currentLang || 'fr';
+      var dict = (window.getMergedTranslations && window.getMergedTranslations()) || {};
+      var d = dict[lang] || dict.fr || {};
+      if (d[key] !== undefined) return d[key];
+      if (dict.fr && dict.fr[key] !== undefined) return dict.fr[key];
+    } catch (_) {}
+    return key;
+  }
+
   function cardHTML(p) {
+    const lang = (window.currentLang || 'fr');
+    const texts = {
+      fr: { title: p.title, excerpt: p.excerpt },
+      en: { title: p.title_en || p.title, excerpt: p.excerpt_en || p.excerpt },
+      ar: { title: p.title_ar || p.title, excerpt: p.excerpt_ar || p.excerpt },
+    };
+    const t = texts[lang] || texts.fr;
     const img = p.image
-      ? '<div class="card-media"><img src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy"></div>'
+      ? '<div class="card-media"><img src="' + esc(p.image) + '" alt="' + esc(t.title) + '" loading="lazy"></div>'
       : '<div class="card-media icon-media"><span class="icon-glyph">📰</span></div>';
     const meta = p.category
       ? '<div class="card-meta"><span>🗓️ ' + esc(p.category) + '</span></div>'
       : '';
+    const content = JSON.stringify(texts).replace(/"/g, '&quot;');
     return (
-      '<div class="card blog-card" data-post-id="' + esc(p.id) + '">' +
+      '<div class="card blog-card" data-post-id="' + esc(p.id) + '" data-lang-content="' + content + '">' +
         img +
         '<div class="card-body">' +
           meta +
-          '<h3>' + esc(p.title) + '</h3>' +
-          (p.excerpt ? '<p class="offer-details">' + esc(truncate(p.excerpt, 140)) + '</p>' : '') +
+          '<h3>' + esc(t.title) + '</h3>' +
+          (t.excerpt ? '<p class="offer-details">' + esc(truncate(t.excerpt, 140)) + '</p>' : '') +
           '<div class="card-actions">' +
-            '<a class="btn outline blog-open-btn" href="blog-post.html?id=' + esc(p.id) + '" data-post-id="' + esc(p.id) + '">Lire l\'article →</a>' +
+            '<a class="card-link blog-open-btn" href="blog-post.html?id=' + esc(p.id) + '" data-post-id="' + esc(p.id) + '">' + esc(lbl('blog_read')) + '</a>' +
           '</div>' +
         '</div>' +
       '</div>'
     );
+  }
+
+  function applyLang() {
+    const lang = (window.currentLang || 'fr');
+    document.querySelectorAll('.blog-card[data-lang-content]').forEach(function (card) {
+      let texts;
+      try { texts = JSON.parse(card.getAttribute('data-lang-content')); } catch (_) { return; }
+      const t = texts[lang] || texts.fr;
+      var h3 = card.querySelector('h3');
+      if (h3) h3.textContent = t.title || '';
+      var det = card.querySelector('.offer-details');
+      if (det) det.textContent = truncate(t.excerpt || '', 140);
+      var link = card.querySelector('.blog-open-btn');
+      if (link) link.textContent = lbl('blog_read');
+    });
   }
 
   async function render(container) {
@@ -59,6 +94,7 @@
         container.innerHTML = '';
         container.appendChild(grid);
       }
+      applyLang();
     } catch (_) {
       // silently ignore: static cards remain visible
     }
@@ -66,6 +102,11 @@
 
   function init() {
     document.querySelectorAll(CONTAINER).forEach(render);
+    if (window._langHandlers) {
+      window._langHandlers.push(applyLang);
+    } else {
+      window._langHandlers = [applyLang];
+    }
   }
 
   if (document.readyState === 'loading') {

@@ -304,6 +304,12 @@ function openOfferForm(id) {
         <input id="f_image_ar_file" type="file" accept="image/*">
         ${edit && edit.image_ar ? `<img class="img-preview" src="${esc(edit.image_ar)}">` : ''}</div>
       <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Nom (Anglais) <span class="muted" style="font-size:11px">(laisser vide pour auto-traduction)</span></label><input id="f_name_en" value="${esc(edit?.name_en || '')}"></div>
+      <div class="form-field full"><label>Traduction — Nom (Arabe)</label><input id="f_name_ar" value="${esc(edit?.name_ar || '')}"></div>
+      <div class="form-field full"><label>Traduction — Détails (Anglais)</label><textarea id="f_details_en">${esc(edit?.details_en || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Détails (Arabe)</label><textarea id="f_details_ar">${esc(edit?.details_ar || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Programme (Anglais)</label><textarea id="f_program_en" style="min-height:80px" placeholder="Texte libre : reprendre le programme traduit">${esc(edit?.program_en || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Programme (Arabe)</label><textarea id="f_program_ar" style="min-height:80px" placeholder="Texte libre : reprendre le programme traduit">${esc(edit?.program_ar || '')}</textarea></div>
       <div class="form-field full">
         <label>Programme (étapes)</label>
         <div id="f_program_steps"></div>
@@ -417,6 +423,12 @@ function openOfferForm(id) {
     fd.append('price', $('#f_price').value);
     fd.append('details', $('#f_details').value);
     fd.append('program', $('#f_program').value);
+    fd.append('name_en', $('#f_name_en').value);
+    fd.append('name_ar', $('#f_name_ar').value);
+    fd.append('details_en', $('#f_details_en').value);
+    fd.append('details_ar', $('#f_details_ar').value);
+    fd.append('program_en', $('#f_program_en').value);
+    fd.append('program_ar', $('#f_program_ar').value);
     fd.append('duration', $('#f_duration').value);
     fd.append('tags', $('#f_tags').value);
     fd.append('active', $('#f_active').checked ? '1' : '0');
@@ -669,6 +681,12 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait (accroche)</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Titre (Anglais) <span class="muted" style="font-size:11px">(laisser vide pour auto-traduction)</span></label><input id="p_title_en" value="${esc(edit?.title_en || '')}"></div>
+      <div class="form-field full"><label>Traduction — Titre (Arabe)</label><input id="p_title_ar" value="${esc(edit?.title_ar || '')}"></div>
+      <div class="form-field full"><label>Traduction — Extrait (Anglais)</label><textarea id="p_excerpt_en">${esc(edit?.excerpt_en || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Extrait (Arabe)</label><textarea id="p_excerpt_ar">${esc(edit?.excerpt_ar || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Contenu (Anglais)</label><textarea id="p_content_en" style="min-height:120px">${esc(edit?.content_en || '')}</textarea></div>
+      <div class="form-field full"><label>Traduction — Contenu (Arabe)</label><textarea id="p_content_ar" style="min-height:120px">${esc(edit?.content_ar || '')}</textarea></div>
       <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publié</label></div>
     </div>
     <div class="form-row">
@@ -698,6 +716,12 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
     fd.append('tags', $('#p_tags').value);
     fd.append('excerpt', $('#p_excerpt').value);
     fd.append('content', $('#p_content').value);
+    fd.append('title_en', $('#p_title_en').value);
+    fd.append('title_ar', $('#p_title_ar').value);
+    fd.append('excerpt_en', $('#p_excerpt_en').value);
+    fd.append('excerpt_ar', $('#p_excerpt_ar').value);
+    fd.append('content_en', $('#p_content_en').value);
+    fd.append('content_ar', $('#p_content_ar').value);
     fd.append('active', $('#p_active').checked ? '1' : '0');
     const file = $('#p_image_file').files[0];
     if (file) fd.append('image', file);

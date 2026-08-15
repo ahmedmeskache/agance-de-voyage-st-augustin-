@@ -184,16 +184,20 @@
   function apply(){
     if(!post) return;
     var L = window.currentLang || 'fr';
+    function pick(base, en, ar){ if(L==='en') return (en || base || ''); if(L==='ar') return (ar || base || ''); return (base || ''); }
+    var title = pick(post.title, post.title_en, post.title_ar);
+    var excerpt = pick(post.excerpt, post.excerpt_en, post.excerpt_ar);
+    var contentTxt = pick(post.content, post.content_en, post.content_ar);
     var Lbl = {
       fr:{blog:'Blog', breadcrumb:'Article', meta_date:'🗓️ Publié', author:'✍️ Équipe S.A.T.V.'},
       en:{blog:'Blog', breadcrumb:'Article', meta_date:'🗓️ Published', author:'✍️ S.A.T.V. Team'},
       ar:{blog:'المدونة', breadcrumb:'مقال', meta_date:'🗓️ نُشر', author:'✍️ فريق سانت أوغستان'}
     }[L] || {};
     document.getElementById('postEyebrow').textContent = Lbl.blog || 'Blog';
-    document.getElementById('postTitle').textContent = post.title || '';
-    document.title = (post.title || 'Article') + ' | Blog S.A.T.V.';
+    document.getElementById('postTitle').textContent = title || '';
+    document.title = (title || 'Article') + ' | Blog S.A.T.V.';
     var leadEl = document.getElementById('postLead');
-    leadEl.textContent = post.excerpt || '';
+    leadEl.textContent = excerpt || '';
     document.getElementById('postCrumb').textContent = Lbl.breadcrumb || 'Article';
     var meta = document.getElementById('postMeta');
     var dateTxt = post.created_at ? new Date(post.created_at).toLocaleDateString(L==='ar'?'ar-DZ':(L==='en'?'en-GB':'fr-FR'), {day:'2-digit',month:'long',year:'numeric'}) : '';
@@ -202,8 +206,7 @@
       (dateTxt ? '<span>'+esc(Lbl.meta_date||'🗓️')+' '+esc(dateTxt)+'</span>' : '') +
       '<span>'+esc(Lbl.author||'')+'</span>';
     var content = document.getElementById('postContent');
-    var body = renderContent(post.content);
-    if(post.image) body = '<img src="'+esc(post.image)+'" alt="'+esc(post.title||'')+'">' + body;
+    var body = renderContent(contentTxt);
     if(post.tags){
       var tags = String(post.tags).split(',').map(function(t){ return t.trim(); }).filter(Boolean);
       if(tags.length) body += '<div class="tag-row">' + tags.map(function(t){ return '<span class="tag-pill">'+esc(t)+'</span>'; }).join('') + '</div>';
