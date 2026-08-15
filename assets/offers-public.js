@@ -13,6 +13,20 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // Look up a translated UI string from the site's language dictionaries
+  // (same keys used by the rest of the site). Falls back to French, then
+  // to the key itself.
+  function lbl(key) {
+    try {
+      var lang = window.currentLang || 'fr';
+      var dict = (window.getMergedTranslations && window.getMergedTranslations()) || {};
+      var d = dict[lang] || dict.fr || {};
+      if (d[key] !== undefined) return d[key];
+      if (dict.fr && dict.fr[key] !== undefined) return dict.fr[key];
+    } catch (_) {}
+    return key;
+  }
+
   function cardHTML(o) {
     // Per-language images: default (FR) always exists via o.image.
     const imgs = {
@@ -42,7 +56,7 @@
     const details = t.details ? '<p class="offer-details">' + esc(t.details) + '</p>' : '';
     const content = JSON.stringify(texts).replace(/"/g, '&quot;');
     const detailBtn = o._hasProgram
-      ? '<button type="button" class="btn outline offer-detail-btn" data-program="' + esc(t.program || '') + '" data-offer-name="' + esc(t.name || '') + '">Voir les détails</button>'
+      ? '<button type="button" class="btn outline offer-detail-btn" data-program="' + esc(t.program || '') + '" data-offer-name="' + esc(t.name || '') + '">' + esc(lbl('quiz_detail')) + '</button>'
       : '';
 
     return (
@@ -55,7 +69,7 @@
           price +
           '<div class="card-actions">' +
             detailBtn +
-            '<button type="button" class="btn reserve-btn" data-book="' + esc(o.name) + '">Réserver</button>' +
+            '<button type="button" class="btn reserve-btn" data-book="' + esc(o.name) + '">' + esc(lbl('btn_reserve')) + '</button>' +
           '</div>' +
         '</div>' +
       '</div>'
@@ -160,7 +174,10 @@
       if (btn) {
         if (t.program) btn.setAttribute('data-program', t.program);
         btn.setAttribute('data-offer-name', t.name || '');
+        btn.textContent = lbl('quiz_detail');
       }
+      var rbtn = card.querySelector('.reserve-btn');
+      if (rbtn) rbtn.textContent = lbl('btn_reserve');
     });
   }
 
