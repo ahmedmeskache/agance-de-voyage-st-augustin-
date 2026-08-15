@@ -29,10 +29,14 @@ function applyRoleRestrictions() {
 
 if (API.token) {
   showApp();
+  // Always land on the dashboard after a refresh (don't restore an old hash
+  // like #extra, which would show the wrong section on page load).
+  location.hash = '#dashboard';
   // best-effort: remember current user id and role from login payload
   try { const p = JSON.parse(atob((API.token || '').split('.')[1] + '==')); __currentUserId = p.id; if (p.role) __currentRole = p.role; } catch (_) {}
   $('#adminName').textContent = __currentRole.charAt(0).toUpperCase() + __currentRole.slice(1);
   applyRoleRestrictions();
+  route();
   loadDashboard();
   // fetch the real user (name/role) so the sidebar is correct after a refresh
   API.get('/auth/me').then(d => {
