@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import db from '../db.js';
 import { contentRequired, authRequired } from '../middleware/auth.js';
+import { translateFields } from '../translate.js';
 
 const router = Router();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -60,42 +61,79 @@ router.get('/:id', (req, res) => {
   return res.json(offer);
 });
 
+// Auto-translate French text -> EN and AR, return an object with the
+// *_en / *_ar values to store. Falls back to null if translation not needed.
+async function buildTranslations(fr) {
+  const fields = [];
+  if (fr.name) fields.push({ key: 'name', value: fr.name });
+  if (fr.details) fields.push({ key: 'details', value: fr.details });
+  if (fr.program) fields.push({ key: 'program', value: fr.program });
+  if (!fields.length) return {};
+  const map = await translateFields(fields);
+  const out = {};
+  for (const [key, val] of Object.entries(map)) {
+    out[`${key}_en`] = val.en;
+    out[`${key}_ar`] = val.ar;
+  }
+  return out;
+}
+
 // POST /api/offers (admin) â€” optional image file(s) or image_url(s)
-router.post('/', contentRequired, upload, (req, res) => {
+router.post('/', contentRequired, upload, async (req, res) => {
   const { type, page, name, category, details, program, price, duration, image_url, image_en_url, image_ar_url, active } = req.body || {};
   if (!type || !name) return res.status(400).json({ error: 'Type et nom requis.' });
   const image = imgField(req, 'image', image_url);
   const image_en = imgField(req, 'image_en', image_en_url);
   const image_ar = imgField(req, 'image_ar', image_ar_url);
+  // Auto-translate name/details/program from French into EN and AR.
+  const tr = await buildTranslations({ name, details, program });
   const info = db.prepare(
-    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, image_en, image_ar, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(type, page || null, name, category || null, details || null, program || null, price || null, duration || null, image, image_en, image_ar, parseActive(active));
+    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, image_en, image_ar, name_en, name_ar, details_en, details_ar, program_en, program_ar, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(
+    type, page || null, name, category || null, details || null, program || null,
+    price || null, duration || null, image, image_en, image_ar,
+    tr.name_en || null, tr.name_ar || null,
+    tr.details_en || null, tr.details_ar || null,
+    tr.program_en || null, tr.program_ar || null,
+    parseActive(active)
+  );
   return res.status(201).json(db.prepare('SELECT * FROM offers WHERE id = ?').get(info.lastInsertRowid));
 });
 
 // PUT /api/offers/:id (admin) â€” mix of fields; image(s) optional
-router.put('/:id', contentRequired, upload, (req, res) => {
+router.put('/:id', contentRequired, upload, async (req, res) => {
   const offer = db.prepare('SELECT * FROM offers WHERE id = ?').get(req.params.id);
   if (!offer) return res.status(404).json({ error: 'Offre introuvable.' });
   const b = req.body || {};
   const image = imgField(req, 'image', b.image_url);
   const image_en = imgField(req, 'image_en', b.image_en_url);
   const image_ar = imgField(req, 'image_ar', b.image_ar_url);
+  const name = b.name !== undefined ? b.name : offer.name;
+  const details = b.details !== undefined ? b.details : offer.details;
+  const program = b.program !== undefined ? b.program : offer.program;
+  // Re-translate from the (French/base) source fields whenever they change.
+  const tr = await buildTranslations({ name, details, program });
   db.prepare(
-    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, image_en=?, image_ar=?, active=? WHERE id=?`
+    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, image_en=?, image_ar=?, name_en=?, name_ar=?, details_en=?, details_ar=?, program_en=?, program_ar=?, active=? WHERE id=?`
   ).run(
     b.type || offer.type,
     b.page !== undefined ? b.page : offer.page,
-    b.name !== undefined ? b.name : offer.name,
+    name,
     b.category !== undefined ? b.category : offer.category,
-    b.details !== undefined ? b.details : offer.details,
-    b.program !== undefined ? b.program : offer.program,
+    details,
+    program,
     b.price !== undefined ? b.price : offer.price,
     b.duration !== undefined ? b.duration : offer.duration,
     image !== undefined ? image : offer.image,
     image_en !== undefined ? image_en : offer.image_en,
     image_ar !== undefined ? image_ar : offer.image_ar,
+    tr.name_en || offer.name_en || null,
+    tr.name_ar || offer.name_ar || null,
+    tr.details_en || offer.details_en || null,
+    tr.details_ar || offer.details_ar || null,
+    tr.program_en || offer.program_en || null,
+    tr.program_ar || offer.program_ar || null,
     b.active !== undefined ? parseActive(b.active) : offer.active,
     offer.id
   );

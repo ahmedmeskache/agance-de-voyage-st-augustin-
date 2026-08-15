@@ -22,6 +22,25 @@ if (!offersCols.includes('image_en')) {
 if (!offersCols.includes('image_ar')) {
   db.exec(`ALTER TABLE offers ADD COLUMN image_ar TEXT;`);
 }
+// Per-language text columns (auto-translated from French at save time)
+if (!offersCols.includes('name_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN name_en TEXT;`);
+}
+if (!offersCols.includes('name_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN name_ar TEXT;`);
+}
+if (!offersCols.includes('details_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN details_en TEXT;`);
+}
+if (!offersCols.includes('details_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN details_ar TEXT;`);
+}
+if (!offersCols.includes('program_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN program_en TEXT;`);
+}
+if (!offersCols.includes('program_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN program_ar TEXT;`);
+}
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
@@ -49,6 +68,12 @@ CREATE TABLE IF NOT EXISTS offers (
   image       TEXT,                        -- default / French image
   image_en    TEXT,                        -- English image
   image_ar    TEXT,                        -- Arabic image
+  name_en     TEXT,                        -- auto-translated name (EN)
+  name_ar     TEXT,                        -- auto-translated name (AR)
+  details_en  TEXT,                        -- auto-translated details (EN)
+  details_ar  TEXT,                        -- auto-translated details (AR)
+  program_en  TEXT,                        -- auto-translated program (EN)
+  program_ar  TEXT,                        -- auto-translated program (AR)
   active      INTEGER NOT NULL DEFAULT 1,
   created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );

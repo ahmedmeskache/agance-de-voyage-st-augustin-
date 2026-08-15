@@ -20,6 +20,12 @@
       en: o.image_en || o.image,
       ar: o.image_ar || o.image,
     };
+    // Per-language text: fall back to the French/base text.
+    const texts = {
+      fr: { name: o.name, details: o.details, program: o.program },
+      en: { name: o.name_en || o.name, details: o.details_en || o.details, program: o.program_en || o.program },
+      ar: { name: o.name_ar || o.name, details: o.details_ar || o.details, program: o.program_ar || o.program },
+    };
     const lang = (window.currentLang || 'fr');
     const active = imgs[lang] || imgs.fr;
     const img = active
@@ -32,20 +38,23 @@
       ? '<div class="card-meta">' + chips.map(function (c) { return '<span>' + c + '</span>'; }).join('') + '</div>'
       : '';
     const price = o.price ? '<div class="offer-price">' + esc(o.price) + '</div>' : '';
-    const details = o.details ? '<p class="offer-details">' + esc(o.details) + '</p>' : '';
+    const t = texts[lang] || texts.fr;
+    const details = t.details ? '<p class="offer-details">' + esc(t.details) + '</p>' : '';
+    const content = JSON.stringify(texts).replace(/"/g, '&quot;');
+    const detailBtn = o._hasProgram
+      ? '<button type="button" class="btn outline offer-detail-btn" data-program="' + esc(t.program || '') + '" data-offer-name="' + esc(t.name || '') + '">Voir les détails</button>'
+      : '';
 
     return (
-      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '">' +
+      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '" data-lang-content="' + content + '">' +
         '<div class="card-media">' + img + '</div>' +
         '<div class="card-body">' +
           meta +
-          '<h3>' + esc(o.name) + '</h3>' +
+          '<h3>' + esc(t.name) + '</h3>' +
           details +
           price +
           '<div class="card-actions">' +
-            (o.program
-              ? '<button type="button" class="btn outline offer-detail-btn" data-program="' + esc(o.program) + '">Voir les détails</button>'
-              : '') +
+            detailBtn +
             '<button type="button" class="btn reserve-btn" data-book="' + esc(o.name) + '">Réserver</button>' +
           '</div>' +
         '</div>' +
@@ -85,40 +94,73 @@
       let offers = await res.json();
       if (!Array.isArray(offers)) offers = [];
       if (limit > 0) offers = offers.slice(0, limit);
-      const grid = document.createElement('div');
-      grid.className = 'grid cols-3 offer-grid';
-      if (offers.length === 0) {
-        grid.innerHTML = '<p style="grid-column:1/-1;color:#7a7360;text-align:center">Aucune offre disponible pour le moment. Revenez bientôt !</p>';
-      } else {
-        grid.innerHTML = offers.map(cardHTML).join('');
-      }
-      container.innerHTML = '';
-      container.appendChild(grid);
+      offers.forEach(function (o) { o._hasProgram = !!(o.program || o.program_en || o.program_ar); });
 
-      // wire reservation + details
-      grid.querySelectorAll('[data-book]').forEach(function (b) {
-        b.addEventListener('click', function () {
+      if (offers.length === 0) {
+        // Keep the static cards; only show a notice if the container is empty.
+        if (container.querySelector('.offer-card') === null && container.children.length === 0) {
+          container.innerHTML = '<p style="grid-column:1/-1;color:#7a7360;text-align:center;grid-row:100">Aucune offre disponible pour le moment. Revenez bientôt !</p>';
+        }
+        return; // do not wipe static cards
+      }
+
+      // APPEND admin offers into the existing grid, keeping any static cards.
+      const html = offers.map(cardHTML).join('');
+      if (container.classList.contains('grid')) {
+        // Container is already a grid (merged with static cards): append cards directly.
+        container.insertAdjacentHTML('beforeend', html);
+      } else {
+        // Standalone container: wrap the cards in a fresh grid.
+        const grid = document.createElement('div');
+        grid.className = 'grid cols-3 offer-grid';
+        grid.innerHTML = html;
+        container.innerHTML = '';
+        container.appendChild(grid);
+      }
+
+      // wire reservation + details (only for the cards just added)
+      const added = Array.prototype.slice.call(container.querySelectorAll('.offer-card')).slice(-offers.length);
+      added.forEach(function (card) {
+        var b = card.querySelector('[data-book]');
+        if (b) b.addEventListener('click', function () {
           if (window.openReserve) window.openReserve(b.getAttribute('data-book'));
           else if (window.location) window.location.href = 'login.html';
         });
-      });
-      grid.querySelectorAll('.offer-detail-btn').forEach(function (b) {
-        b.addEventListener('click', function () {
-          programModal(b.getAttribute('data-program'), b.closest('.card').querySelector('h3').textContent);
+        var db = card.querySelector('.offer-detail-btn');
+        if (db) db.addEventListener('click', function () {
+          programModal(db.getAttribute('data-program'), db.getAttribute('data-offer-name'));
         });
       });
     } catch (e) {
-      container.innerHTML = '<p style="color:#c0392b;text-align:center">Impossible de charger les offres.</p>';
+      // Only show an error if there are no static cards to fall back on.
+      if (container.querySelector('.offer-card') === null && container.children.length === 0) {
+        container.innerHTML = '<p style="color:#c0392b;text-align:center">Impossible de charger les offres.</p>';
+      }
     }
   }
 
-  // Swap every offer image to the current language when the site language
-  // changes. Works on cards already in the DOM (including ones added later).
-  function applyLangImages() {
+  // Swap every offer image AND text to the current language when the site
+  // language changes. Works on cards already in the DOM (including ones
+  // added later).
+  function applyLang() {
     const lang = (window.currentLang || 'fr');
     document.querySelectorAll('img.offer-img').forEach(function (img) {
       const src = img.getAttribute('data-' + lang) || img.getAttribute('data-fr');
       if (src) img.src = src;
+    });
+    document.querySelectorAll('.offer-card[data-lang-content]').forEach(function (card) {
+      let texts;
+      try { texts = JSON.parse(card.getAttribute('data-lang-content')); } catch (_) { return; }
+      const t = texts[lang] || texts.fr;
+      var h3 = card.querySelector('h3');
+      if (h3) h3.textContent = t.name || '';
+      var det = card.querySelector('.offer-details');
+      if (det) det.textContent = t.details || '';
+      var btn = card.querySelector('.offer-detail-btn');
+      if (btn) {
+        if (t.program) btn.setAttribute('data-program', t.program);
+        btn.setAttribute('data-offer-name', t.name || '');
+      }
     });
   }
 
@@ -126,17 +168,17 @@
   // after the language was already set.
   const _origRender = render;
   render = function (container) {
-    _origRender(container).then(applyLangImages).catch(function () {});
+    _origRender(container).then(applyLang).catch(function () {});
   };
 
   function init() {
     document.querySelectorAll(CONTAINER).forEach(render);
     if (window._langHandlers) {
-      window._langHandlers.push(applyLangImages);
+      window._langHandlers.push(applyLang);
     } else {
-      window._langHandlers = [applyLangImages];
+      window._langHandlers = [applyLang];
     }
-    applyLangImages();
+    applyLang();
   }
 
   if (document.readyState === 'loading') {
