@@ -82,7 +82,7 @@ async function buildTranslations(fr) {
 
 // POST /api/offers (admin) â€” optional image file(s) or image_url(s)
 router.post('/', contentRequired, upload, async (req, res) => {
-  const { type, page, name, category, details, program, price, duration, image_url, image_en_url, image_ar_url, active } = req.body || {};
+  const { type, page, name, category, details, program, price, duration, tags, image_url, image_en_url, image_ar_url, active } = req.body || {};
   if (!type || !name) return res.status(400).json({ error: 'Type et nom requis.' });
   const image = imgField(req, 'image', image_url);
   const image_en = imgField(req, 'image_en', image_en_url);
@@ -90,11 +90,11 @@ router.post('/', contentRequired, upload, async (req, res) => {
   // Auto-translate name/details/program from French into EN and AR.
   const tr = await buildTranslations({ name, details, program });
   const info = db.prepare(
-    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, image_en, image_ar, name_en, name_ar, details_en, details_ar, program_en, program_ar, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO offers (type, page, name, category, details, program, price, duration, tags, image, image_en, image_ar, name_en, name_ar, details_en, details_ar, program_en, program_ar, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     type, page || null, name, category || null, details || null, program || null,
-    price || null, duration || null, image, image_en, image_ar,
+    price || null, duration || null, tags || null, image, image_en, image_ar,
     tr.name_en || null, tr.name_ar || null,
     tr.details_en || null, tr.details_ar || null,
     tr.program_en || null, tr.program_ar || null,
@@ -117,7 +117,7 @@ router.put('/:id', contentRequired, upload, async (req, res) => {
   // Re-translate from the (French/base) source fields whenever they change.
   const tr = await buildTranslations({ name, details, program });
   db.prepare(
-    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, image_en=?, image_ar=?, name_en=?, name_ar=?, details_en=?, details_ar=?, program_en=?, program_ar=?, active=? WHERE id=?`
+    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, tags=?, image=?, image_en=?, image_ar=?, name_en=?, name_ar=?, details_en=?, details_ar=?, program_en=?, program_ar=?, active=? WHERE id=?`
   ).run(
     b.type || offer.type,
     b.page !== undefined ? b.page : offer.page,
@@ -127,6 +127,7 @@ router.put('/:id', contentRequired, upload, async (req, res) => {
     program,
     b.price !== undefined ? b.price : offer.price,
     b.duration !== undefined ? b.duration : offer.duration,
+    b.tags !== undefined ? b.tags : offer.tags,
     image !== undefined ? image : offer.image,
     image_en !== undefined ? image_en : offer.image_en,
     image_ar !== undefined ? image_ar : offer.image_ar,

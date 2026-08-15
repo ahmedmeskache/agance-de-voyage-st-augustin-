@@ -60,7 +60,7 @@
       : '';
 
     return (
-      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '" data-lang-content="' + content + '" data-offer-name="' + esc(o.name) + '" data-offer-img="' + esc(imgs.fr) + '" data-offer-img-en="' + esc(imgs.en) + '" data-offer-img-ar="' + esc(imgs.ar) + '" data-offer-duration="' + esc(o.duration || '') + '" data-offer-category="' + esc(o.category || '') + '" data-offer-price="' + esc(o.price || '') + '" data-offer-details="' + esc(o.details || '') + '" data-offer-details-en="' + esc(o.details_en || '') + '" data-offer-details-ar="' + esc(o.details_ar || '') + '" data-offer-program="' + esc(o.program || '') + '" data-offer-program-en="' + esc(o.program_en || '') + '" data-offer-program-ar="' + esc(o.program_ar || '') + '" data-offer-name-en="' + esc(o.name_en || '') + '" data-offer-name-ar="' + esc(o.name_ar || '') + '">' +
+      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '" data-lang-content="' + content + '" data-offer-name="' + esc(o.name) + '" data-offer-img="' + esc(imgs.fr) + '" data-offer-img-en="' + esc(imgs.en) + '" data-offer-img-ar="' + esc(imgs.ar) + '" data-offer-duration="' + esc(o.duration || '') + '" data-offer-category="' + esc(o.category || '') + '" data-offer-price="' + esc(o.price || '') + '" data-offer-details="' + esc(o.details || '') + '" data-offer-details-en="' + esc(o.details_en || '') + '" data-offer-details-ar="' + esc(o.details_ar || '') + '" data-offer-program="' + esc(o.program || '') + '" data-offer-program-en="' + esc(o.program_en || '') + '" data-offer-program-ar="' + esc(o.program_ar || '') + '" data-offer-name-en="' + esc(o.name_en || '') + '" data-offer-name-ar="' + esc(o.name_ar || '') + '" data-offer-tags="' + esc(o.tags || '') + '">' +
         '<div class="card-media">' + img + '</div>' +
         '<div class="card-body">' +
           meta +
@@ -129,8 +129,11 @@
       ? '<div class="detail-hero"><img src="' + esc(img) + '" alt="' + esc(name) + '"></div>'
       : '';
 
-    const tagsHTML = autoTags(details).length
-      ? '<div class="tag-row offer-detail-tags">' + autoTags(details).map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('') + '</div>'
+    // Tags you type in the admin win; otherwise auto-extract keywords from the description.
+    const customTags = String(attr('data-offer-tags') || '').split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+    const tags = customTags.length ? customTags : autoTags(details);
+    const tagsHTML = tags.length
+      ? '<div class="tag-row offer-detail-tags">' + tags.map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('') + '</div>'
       : '';
 
     // Structured program: render each step (blank-line separated) as its own block.

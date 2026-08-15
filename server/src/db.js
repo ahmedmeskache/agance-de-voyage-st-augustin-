@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS offers (
   program     TEXT,                        -- full program (multi-line)
   price       TEXT,
   duration    TEXT,
+  tags        TEXT,                        -- comma-separated tag pills (optional)
   image       TEXT,                        -- default / French image
   image_en    TEXT,                        -- English image
   image_ar    TEXT,                        -- Arabic image
@@ -111,6 +112,10 @@ if (!offersCols.includes('program_en')) {
 }
 if (!offersCols.includes('program_ar')) {
   db.exec(`ALTER TABLE offers ADD COLUMN program_ar TEXT;`);
+}
+// Offer tags (comma-separated) for the keyword tag pills in the detail popup.
+if (!offersCols.includes('tags')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN tags TEXT;`);
 }
 
 // Blog tags (comma-separated) for tag pills on the article page.

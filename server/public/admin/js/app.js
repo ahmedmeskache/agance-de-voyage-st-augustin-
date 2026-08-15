@@ -310,6 +310,7 @@ function openOfferForm(id) {
         <button type="button" class="btn-sm gray" id="addProgStepBtn" style="margin-top:8px">+ Ajouter une étape</button>
       </div>
       <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
+      <div class="form-field"><label>Tags des détails (séparés par des virgules)</label><input id="f_tags" value="${esc(edit?.tags || '')}" placeholder="Ex : UNESCO, Culture, Découverte"></div>
       <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiée</label></div>
     </div>
     <input type="hidden" id="f_program" value="${esc(edit?.program || '')}">
@@ -417,6 +418,7 @@ function openOfferForm(id) {
     fd.append('details', $('#f_details').value);
     fd.append('program', $('#f_program').value);
     fd.append('duration', $('#f_duration').value);
+    fd.append('tags', $('#f_tags').value);
     fd.append('active', $('#f_active').checked ? '1' : '0');
     const frFile = $('#f_image_file').files[0];
     if (frFile) fd.append('image', frFile);
