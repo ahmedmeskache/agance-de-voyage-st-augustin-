@@ -1,7 +1,8 @@
 // Public-site dynamic offers renderer.
 // Fetches ACTIVE offers from the backend and renders them into any
-// container marked with data-offers-grid. Each container may specify
-// data-offers-type="circuit"|"excursion" (or none for all).
+// container marked with data-offers-grid. Each container may specify:
+//   data-offers-type="circuit"|"excursion" (or none for all)
+//   data-offers-page="local|international|omra|etranger|excursions" (or none for all)
 // Uses the same card markup/CSS classes as the rest of the site.
 (function () {
   const CONTAINER = '[data-offers-grid]';
@@ -65,9 +66,12 @@
 
   async function render(container) {
     const type = container.getAttribute('data-offers-type') || '';
+    const page = container.getAttribute('data-offers-page') || '';
     const limit = parseInt(container.getAttribute('data-offers-limit') || '0', 10);
-    let url = '/api/offers';
-    if (type) url += '?type=' + encodeURIComponent(type);
+    const params = [];
+    if (type) params.push('type=' + encodeURIComponent(type));
+    if (page) params.push('page=' + encodeURIComponent(page));
+    const url = '/api/offers' + (params.length ? '?' + params.join('&') : '');
     try {
       const res = await fetch(url);
       let offers = await res.json();

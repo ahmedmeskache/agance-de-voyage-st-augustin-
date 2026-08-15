@@ -11,6 +11,12 @@ const db = new Database(path.join(dataDir, 'satv.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
+// Migration: add `page` column to offers if it doesn't exist (existing DBs).
+const offersCols = db.prepare(`PRAGMA table_info(offers)`).all().map(c => c.name);
+if (!offersCols.includes('page')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN page TEXT;`);
+}
+
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +33,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS offers (
   id          INTEGER PRIMARY KEY AUTOINCREMENT,
   type        TEXT    NOT NULL,            -- 'circuit' | 'excursion'
+  page        TEXT,                        -- where it appears: 'local'|'international'|'omra'|'etranger'|'excursions'
   name        TEXT    NOT NULL,
   category    TEXT,                        -- e.g. Spirituel, Culturel, Nature...
   details     TEXT,                        -- short description

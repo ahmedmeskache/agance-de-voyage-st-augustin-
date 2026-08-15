@@ -224,6 +224,7 @@ function renderOffers() {
         <div class="oc-body">
           <div class="oc-tags">
             <span class="badge ${esc(o.type)}">${o.type === 'circuit' ? 'Circuit' : 'Excursion'}</span>
+            ${o.page ? `<span class="badge inactive">${({local:'Local',international:'International',omra:'Omra',etranger:'Étrangers',excursions:'Excursions'})[o.page] || o.page}</span>` : ''}
             ${o.category ? `<span class="badge inactive">${esc(o.category)}</span>` : ''}
             ${!o.active ? '<span class="badge inactive">Masquée</span>' : ''}
           </div>
@@ -270,6 +271,16 @@ function openOfferForm(id) {
           <option value="excursion" ${edit && edit.type === 'excursion' ? 'selected' : ''}>Excursion</option>
         </select>
       </div>
+      <div class="form-field">
+        <label>Page / catégorie (où afficher)</label>
+        <select id="f_page">
+          <option value="local" data-page-for="circuit">Circuit Local (Algérie)</option>
+          <option value="international" data-page-for="circuit">Circuit International</option>
+          <option value="omra" data-page-for="circuit">Omra</option>
+          <option value="etranger" data-page-for="circuit">Étrangers (Découverte de l'Afrique du Nord)</option>
+          <option value="excursions" data-page-for="excursion">Excursions intérieur</option>
+        </select>
+      </div>
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
       <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturelâ€¦"></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
@@ -287,9 +298,33 @@ function openOfferForm(id) {
     </div>`;
   openModal(edit ? 'Modifier l\'offre' : 'Nouvelle offre', body);
 
+  // Show only the page options matching the selected type (circuit/excursion).
+  const $type = $('#f_type');
+  const $page = $('#f_page');
+  function syncPageOptions() {
+    const t = $type.value;
+    Array.from($page.options).forEach(opt => {
+      const forType = opt.dataset.pageFor;
+      opt.style.display = (forType === t) ? '' : 'none';
+      opt.disabled = (forType === t) ? false : true;
+    });
+    // Set the current value from the edited offer if it's compatible.
+    if (edit && edit.page) {
+      const match = Array.from($page.options).find(o => o.value === edit.page);
+      if (match && match.dataset.pageFor === t) $page.value = edit.page;
+      else $page.value = Array.from($page.options).find(o => o.dataset.pageFor === t && o.value).value;
+    } else if (!$page.value || $page.selectedOptions[0].dataset.pageFor !== t) {
+      const first = Array.from($page.options).find(o => o.dataset.pageFor === t && o.value);
+      $page.value = first ? first.value : '';
+    }
+  }
+  $type.addEventListener('change', syncPageOptions);
+  syncPageOptions();
+
   $('#saveOfferBtn').addEventListener('click', async () => {
     const fd = new FormData();
     fd.append('type', $('#f_type').value);
+    fd.append('page', $('#f_page').value);
     fd.append('name', $('#f_name').value);
     fd.append('category', $('#f_category').value);
     fd.append('price', $('#f_price').value);

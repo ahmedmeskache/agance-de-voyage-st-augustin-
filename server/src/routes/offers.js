@@ -28,18 +28,17 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 
-// GET /api/offers?type=circuit|excursion&all=1 (public: active only unless admin all)
+// GET /api/offers?type=circuit|excursion&page=local|international|omra|etranger|excursions&all=1
+// (public: active only unless admin all)
 router.get('/', (req, res) => {
-  const { type, all } = req.query;
-  let rows;
-  if (all === '1') {
-    rows = type ? db.prepare('SELECT * FROM offers WHERE type = ? ORDER BY created_at DESC').all(type)
-                : db.prepare('SELECT * FROM offers ORDER BY created_at DESC').all();
-  } else {
-    rows = type
-      ? db.prepare('SELECT * FROM offers WHERE type = ? AND active = 1 ORDER BY created_at DESC').all(type)
-      : db.prepare('SELECT * FROM offers WHERE active = 1 ORDER BY created_at DESC').all();
-  }
+  const { type, page, all } = req.query;
+  const conds = [];
+  const args = [];
+  if (type) { conds.push('type = ?'); args.push(type); }
+  if (page) { conds.push('page = ?'); args.push(page); }
+  if (all !== '1') conds.push('active = 1');
+  const where = conds.length ? 'WHERE ' + conds.join(' AND ') : '';
+  const rows = db.prepare(`SELECT * FROM offers ${where} ORDER BY created_at DESC`).all(...args);
   return res.json(rows);
 });
 
@@ -52,13 +51,13 @@ router.get('/:id', (req, res) => {
 
 // POST /api/offers (admin) â€” optional image file or image_url
 router.post('/', contentRequired, upload.single('image'), (req, res) => {
-  const { type, name, category, details, program, price, duration, image_url, active } = req.body || {};
+  const { type, page, name, category, details, program, price, duration, image_url, active } = req.body || {};
   if (!type || !name) return res.status(400).json({ error: 'Type et nom requis.' });
   const image = req.file ? `/uploads/${req.file.filename}` : (image_url || null);
   const info = db.prepare(
-    `INSERT INTO offers (type, name, category, details, program, price, duration, image, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(type, name, category || null, details || null, program || null, price || null, duration || null, image, parseActive(active));
+    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(type, page || null, name, category || null, details || null, program || null, price || null, duration || null, image, parseActive(active));
   return res.status(201).json(db.prepare('SELECT * FROM offers WHERE id = ?').get(info.lastInsertRowid));
 });
 
@@ -69,9 +68,10 @@ router.put('/:id', contentRequired, upload.single('image'), (req, res) => {
   const b = req.body || {};
   const image = req.file ? `/uploads/${req.file.filename}` : (b.image_url !== undefined ? b.image_url : offer.image);
   db.prepare(
-    `UPDATE offers SET type=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, active=? WHERE id=?`
+    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, active=? WHERE id=?`
   ).run(
     b.type || offer.type,
+    b.page !== undefined ? b.page : offer.page,
     b.name !== undefined ? b.name : offer.name,
     b.category !== undefined ? b.category : offer.category,
     b.details !== undefined ? b.details : offer.details,
