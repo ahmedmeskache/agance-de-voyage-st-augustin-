@@ -24,7 +24,7 @@ app.use(express.json({ limit: '2mb' }));
 import db from './db.js';
 import bcrypt from 'bcryptjs';
 
-// Seed the admin account on first boot (does not close the shared connection)
+// Seed (or update) the admin account so env variables always take effect.
 function seedAdmin() {
   const email = process.env.ADMIN_EMAIL || 'admin@satv.dz';
   const password = process.env.ADMIN_PASSWORD || 'admin123456';
@@ -34,6 +34,12 @@ function seedAdmin() {
     db.prepare('INSERT INTO users (name, email, password_hash, provider, role) VALUES (?, ?, ?, ?, ?)')
       .run(name, email, bcrypt.hashSync(password, 10), 'email', 'admin');
     console.log(`[seed] Admin -> ${email}`);
+  } else {
+    // Keep the existing admin in sync with the env variables so a redeploy
+    // with new ADMIN_EMAIL / ADMIN_PASSWORD actually applies them.
+    db.prepare('UPDATE users SET email = ?, name = ? WHERE id = ?').run(email, name, existing.id);
+    db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), existing.id);
+    console.log(`[seed] Admin mis à jour -> ${email}`);
   }
 }
 seedAdmin();
