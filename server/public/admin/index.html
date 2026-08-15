@@ -13,18 +13,24 @@
 <div id="loginView" class="login-view hidden">
   <div class="login-card">
     <div class="login-brand">
-      <img src="../../assets/logo.png" alt="logo">
+      <div class="brand-badge"><img src="../../assets/logo.png" alt="logo"></div>
       <h1>Saint Augustin</h1>
       <p>Espace administrateur</p>
     </div>
     <div id="loginError" class="form-error hidden"></div>
+    <div class="login-role">
+      <span>Vous vous connectez en tant que :</span>
+      <div class="role-toggle">
+        <button type="button" class="role-opt active" data-role="admin">Administrateur</button>
+        <button type="button" class="role-opt" data-role="user">Utilisateur</button>
+      </div>
+    </div>
     <form id="loginForm">
-      <input id="loginEmail" type="email" placeholder="Email admin" required>
+      <input id="loginEmail" type="email" placeholder="Email" required>
       <input id="loginPassword" type="password" placeholder="Mot de passe" required>
       <button type="submit" class="btn-primary">Se connecter</button>
     </form>
-    <button id="previewBtn" class="btn-ghost" style="width:100%;margin-top:10px">✨ Aperçu du tableau de bord (démo)</button>
-    <p class="login-hint">Première connexion ? Voir <code>server/.env</code> (ADMIN_EMAIL / ADMIN_PASSWORD).</p>
+    <p class="login-hint">Les comptes utilisateurs ont un accès limité au contenu. Les administrateurs ont un accès complet.</p>
   </div>
 </div>
 
@@ -36,19 +42,22 @@
       <span>Admin</span>
     </div>
     <nav>
-      <a href="#dashboard" data-view="dashboard" class="active">📊 Tableau de bord</a>
-      <a href="#offers" data-view="offers">🧭 Circuits &amp; Excursions</a>
-      <a href="#reservations" data-view="reservations">📋 Réservations</a>
-      <a href="#users" data-view="users">👥 Utilisateurs</a>
-      <a href="#blog" data-view="blog">📝 Blog</a>
-      <a href="#extra" data-view="extra">✨ Extra</a>
+      <div class="nav-label">Menu</div>
+      <a href="#dashboard" data-view="dashboard" class="active"><span class="nav-ico">📊</span>Tableau de bord</a>
+      <a href="#offers" data-view="offers"><span class="nav-ico">🧭</span>Circuits &amp; Excursions</a>
+      <a href="#reservations" data-view="reservations"><span class="nav-ico">📋</span>Réservations</a>
+      <a href="#users" data-view="users"><span class="nav-ico">👥</span>Utilisateurs</a>
+      <a href="#blog" data-view="blog"><span class="nav-ico">📝</span>Blog</a>
+      <a href="#extra" data-view="extra"><span class="nav-ico">✨</span>Extra</a>
     </nav>
     <div class="side-user">
-      <div id="adminName">—</div>
-      <div id="adminRole" style="font-size:12px;color:#aac;margin:-6px 0 10px;font-weight:600;text-transform:capitalize"></div>
-      <button id="changeNameBtn" class="btn-ghost" style="margin-bottom:8px;width:100%">👤 Changer le nom d'utilisateur</button>
+      <div class="user-meta">
+        <div id="adminName">—</div>
+        <div id="adminRole"></div>
+      </div>
+      <button id="changeNameBtn" class="btn-ghost" style="margin-bottom:8px;width:100%">👤 Changer le nom</button>
       <button id="changePwBtn" class="btn-ghost" style="margin-bottom:8px;width:100%">🔑 Changer le mot de passe</button>
-      <button id="logoutBtn" class="btn-ghost">Déconnexion</button>
+      <button id="logoutBtn" class="btn-ghost" style="width:100%">Déconnexion</button>
     </div>
   </aside>
 
