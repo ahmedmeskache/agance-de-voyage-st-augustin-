@@ -542,18 +542,18 @@ async function loadUsers() {
 }
 
 function renderUsers() {
-  // Only staff accounts (admin / manager) are manageable here. Regular
-  // website users are excluded so they can never be promoted to admin.
-  const staff = usersCache.filter(u => u.role === 'admin' || u.role === 'manager');
+  // Only admin accounts are manageable here. Regular website users (and
+  // legacy manager accounts) are excluded so nobody can be promoted.
+  const staff = usersCache.filter(u => u.role === 'admin');
   $('#userList').innerHTML = staff.length ? `
     <div class="list-tools">
-      <span class="muted">${staff.length} compte(s) d'administration</span>
+      <span class="muted">${staff.length} compte(s) administrateur(s)</span>
     </div>
     ${staff.map(u => `
       <div class="offer-card user-card">
         <div class="oc-body" style="flex:1">
           <div class="oc-tags">
-            <span class="badge ${u.role === 'admin' ? 'admin' : 'inactive'}">${u.role === 'admin' ? 'Admin' : 'Manager'}</span>
+            <span class="badge admin">Admin</span>
             ${u.provider && u.provider !== 'email' ? `<span class="badge inactive">${esc(u.provider)}</span>` : ''}
           </div>
           <h4>${esc(u.name)} ${u.id === __currentUserId ? '<span class="badge inactive">vous</span>' : ''}</h4>
@@ -563,11 +563,10 @@ function renderUsers() {
         <div class="oc-actions">
           <button class="btn-sm" onclick="openUserForm(${u.id})">Modifier</button>
           <button class="btn-sm gray" onclick="openUserPassword(${u.id})">Mot de passe</button>
-          <button class="btn-sm ${u.role === 'admin' ? 'green' : 'gray'}" onclick="toggleUserRole(${u.id})">${u.role === 'admin' ? 'Passer en manager' : 'Passer en admin'}</button>
           <button class="btn-sm red" onclick="deleteUser(${u.id})">Supprimer</button>
         </div>
       </div>`).join('')}`
-    : '<p class="muted">Aucun compte d\'administration pour le moment.</p>';
+    : '<p class="muted">Aucun compte administrateur pour le moment.</p>';
 }
 
 function openUserForm(id) {
@@ -580,8 +579,7 @@ function openUserForm(id) {
       <div class="form-field"><label>Téléphone</label><input id="u_phone" value="${esc(edit?.phone || '')}" placeholder="055..." ></div>
       <div class="form-field full"><label>Rôle</label>
         <select id="u_role">
-          <option value="admin" ${!edit || edit.role === 'admin' ? 'selected' : ''}>Administrateur</option>
-          <option value="manager" ${edit && edit.role === 'manager' ? 'selected' : ''}>Manager</option>
+          <option value="admin" selected>Administrateur</option>
         </select>
       </div>
     </div>
@@ -632,18 +630,6 @@ function openUserPassword(id) {
       alert('Mot de passe réinitialisé ✓');
     } catch (err) { alert(err.message); }
   });
-}
-
-async function toggleUserRole(id) {
-  const u = usersCache.find(x => x.id === id);
-  if (!u) return;
-  if (u.id === __currentUserId) return alert('Vous ne pouvez pas modifier votre propre rôle.');
-  const want = u.role === 'admin' ? 'manager' : 'admin';
-  if (!confirm(`Passer « ${u.name} » en ${want === 'admin' ? 'administrateur' : 'manager'} ?`)) return;
-  try {
-    await API.put(`/admin/users/${id}`, { role: want });
-    await loadUsers();
-  } catch (err) { alert(err.message); }
 }
 
 async function deleteUser(id) {

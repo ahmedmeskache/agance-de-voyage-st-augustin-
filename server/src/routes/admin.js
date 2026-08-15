@@ -25,14 +25,14 @@ router.get('/stats', adminRequired, (req, res) => {
   const recentReservations = db.prepare(
     'SELECT r.*, u.name AS user_name, u.email AS user_email FROM reservations r LEFT JOIN users u ON u.id = r.user_id ORDER BY r.created_at DESC LIMIT 8'
   ).all();
-  const recentUsers = db.prepare('SELECT id, name, email, created_at FROM users ORDER BY created_at DESC LIMIT 8').all();
+  const recentUsers = db.prepare("SELECT id, name, email, created_at FROM users WHERE role = 'admin' ORDER BY created_at DESC LIMIT 8").all();
   return res.json({ ...one, recentReservations, recentUsers });
 });
 
 // ---------- Users (accounts & admin management) ----------
 router.get('/users', superAdminRequired, (req, res) => {
   const rows = db.prepare(
-    "SELECT id, name, email, role, phone, provider, created_at, (SELECT COUNT(*) FROM reservations r WHERE r.user_id = u.id) AS reservations_count FROM users u ORDER BY created_at DESC"
+    "SELECT id, name, email, role, phone, provider, created_at, (SELECT COUNT(*) FROM reservations r WHERE r.user_id = u.id) AS reservations_count FROM users u WHERE role = 'admin' ORDER BY created_at DESC"
   ).all();
   return res.json(rows.map(publicUser).map(u => {
     const full = rows.find(r => r.id === u.id);
@@ -51,8 +51,8 @@ router.post('/users', superAdminRequired, (req, res) => {
   const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
 if (existing) return res.status(409).json({ error: 'Un compte existe déjà avec cet email.' });
 
-  const allowed = ['admin', 'manager', 'user'];
-  const finalRole = allowed.includes(role) ? role : 'user';
+  const allowed = ['admin'];
+  const finalRole = allowed.includes(role) ? role : 'admin';
   const info = db.prepare(
     "INSERT INTO users (name, email, password_hash, phone, role, provider) VALUES (?, ?, ?, ?, ?, 'email')"
   ).run(name, email, bcrypt.hashSync(password, 10), phone || null, finalRole);
@@ -65,7 +65,7 @@ router.put('/users/:id', superAdminRequired, (req, res) => {
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
   if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
   const { name, email, phone, role } = req.body || {};
-  const allowed = ['admin', 'manager', 'user'];
+  const allowed = ['admin'];
   const newRole = role !== undefined ? (allowed.includes(role) ? role : user.role) : user.role;
   // Prevent self-demotion
   if (id === req.user.id && newRole !== 'admin') {
