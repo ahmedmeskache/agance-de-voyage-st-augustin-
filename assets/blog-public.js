@@ -48,14 +48,14 @@
     if (old) old.remove();
     const m = document.createElement('div');
     m.id = 'blogArticleModal';
-    m.style.cssText = 'position:fixed;inset:0;background:rgba(10,18,30,.6);display:flex;align-items:center;justify-content:center;z-index:600;padding:20px;font-family:Montserrat,sans-serif;';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(10,18,30,.6);display:flex;align-items:center;justify-content:center;z-index:600;padding:20px;font-family:inherit;';
     const img = btn.getAttribute('data-post-img')
       ? '<img src="' + esc(btn.getAttribute('data-post-img')) + '" alt="" style="width:100%;height:220px;object-fit:cover;border-radius:10px;margin-bottom:14px">'
       : '';
     m.innerHTML =
-      '<div style="background:#fff;border-radius:16px;width:640px;max-width:100%;max-height:88vh;overflow:auto;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.4)">' +
+      '<div style="background:#fff;border-radius:16px;width:640px;max-width:100%;max-height:88vh;overflow:auto;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.4);font-family:\'Montserrat\',sans-serif">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
-          '<h3 style="margin:0;color:#122a4d;font-family:Playfair Display,serif">' + esc(btn.getAttribute('data-post-title')) + '</h3>' +
+          '<h3 style="margin:0;color:#122a4d;font-family:\'Playfair Display\',serif">' + esc(btn.getAttribute('data-post-title')) + '</h3>' +
           '<button class="blog-modal-close" style="border:none;background:none;font-size:26px;cursor:pointer;color:#666">×</button>' +
         '</div>' +
         (btn.getAttribute('data-post-category') ? '<div class="card-meta" style="margin-bottom:12px"><span>🗓️ ' + esc(btn.getAttribute('data-post-category')) + '</span></div>' : '') +

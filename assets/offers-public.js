@@ -81,14 +81,14 @@
     if (old) old.remove();
     const m = document.createElement('div');
     m.id = 'offerProgramModal';
-    m.style.cssText = 'position:fixed;inset:0;background:rgba(10,18,30,.6);display:flex;align-items:center;justify-content:center;z-index:600;padding:20px;font-family:Montserrat,sans-serif;';
+    m.style.cssText = 'position:fixed;inset:0;background:rgba(10,18,30,.6);display:flex;align-items:center;justify-content:center;z-index:600;padding:20px;font-family:inherit;';
     m.innerHTML =
-      '<div style="background:#fff;border-radius:16px;width:520px;max-width:100%;max-height:88vh;overflow:auto;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.4)">' +
+      '<div style="background:#fff;border-radius:16px;width:520px;max-width:100%;max-height:88vh;overflow:auto;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.4);font-family:\'Montserrat\',sans-serif">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
-          '<h3 style="margin:0;color:#122a4d;font-family:Playfair Display,serif">' + esc(name) + '</h3>' +
+          '<h3 style="margin:0;color:#122a4d;font-family:\'Playfair Display\',serif">' + esc(name) + '</h3>' +
           '<button class="offer-modal-close" style="border:none;background:none;font-size:26px;cursor:pointer;color:#666">×</button>' +
         '</div>' +
-        '<div style="white-space:pre-wrap;color:#333;font-size:14px;line-height:1.7">' + esc(program) + '</div>' +
+        '<div style="white-space:pre-wrap;color:#333;font-size:14px;line-height:1.7;font-family:inherit">' + esc(program) + '</div>' +
       '</div>';
     document.body.appendChild(m);
     m.querySelector('.offer-modal-close').addEventListener('click', function () { m.remove(); });

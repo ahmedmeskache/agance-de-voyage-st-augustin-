@@ -953,6 +953,23 @@ body[dir="rtl"] .map-slide-head h3{font-family:'Cairo',serif;}
 .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
 .card-actions .btn{flex:1;margin:0;}
 
+/* ---------- dynamic offer cards (admin) ---------- */
+.offer-card .offer-price{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold);font-weight:700;margin-bottom:12px;}
+body[dir="rtl"] .offer-card .offer-price{font-family:'Cairo',serif;}
+.offer-card .offer-details{font-size:13.5px;color:#666;line-height:1.7;margin-bottom:18px;flex:1;}
+.blog-card .card-media{height:200px;}
+.blog-card .card-media img{width:100%;height:100%;object-fit:cover;}
+.blog-card .card-media.icon-media{display:flex;align-items:center;justify-content:center;background:var(--cream,#f5f1e6);}
+
+/* Dynamic offer/blog modals: match site fonts, including RTL (Cairo) */
+#offerProgramModal, #blogArticleModal{font-family:'Montserrat',sans-serif;}
+#offerProgramModal > div, #blogArticleModal > div{font-family:'Montserrat',sans-serif;}
+#offerProgramModal h3, #blogArticleModal h3{font-family:'Playfair Display',serif;}
+body[dir="rtl"] #offerProgramModal, body[dir="rtl"] #blogArticleModal,
+body[dir="rtl"] #offerProgramModal > div, body[dir="rtl"] #blogArticleModal > div{font-family:'Cairo','Montserrat',sans-serif;}
+body[dir="rtl"] #offerProgramModal h3, body[dir="rtl"] #blogArticleModal h3{font-family:'Cairo',serif;}
+
+
 .modal-overlay{display:none;}
 .modal-overlay.open{display:flex;position:fixed;inset:0;z-index:2000;background:rgba(18,42,77,.55);
   align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);
