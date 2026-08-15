@@ -100,23 +100,23 @@ $('#changePwBtn').addEventListener('click', () => {
   openModal('Changer le mot de passe', `
     <div class="form-grid">
       <div class="form-field full"><label>Mot de passe actuel</label><input id="pw_current" type="password" placeholder="Votre mot de passe actuel"></div>
-      <div class="form-field full"><label>Nouveau mot de passe</label><input id="pw_new" type="password" placeholder="Au moins 6 caractÃ¨res"></div>
-      <div class="form-field full"><label>Confirmer</label><input id="pw_confirm" type="password" placeholder="RÃ©pÃ©ter le nouveau mot de passe"></div>
+      <div class="form-field full"><label>Nouveau mot de passe</label><input id="pw_new" type="password" placeholder="Au moins 6 caractères"></div>
+      <div class="form-field full"><label>Confirmer</label><input id="pw_confirm" type="password" placeholder="Répéter le nouveau mot de passe"></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" id="savePwBtn">Mettre Ã  jour</button>
+      <button class="btn-primary" id="savePwBtn">Mettre à jour</button>
     </div>`);
   $('#savePwBtn').addEventListener('click', async () => {
     const cur = $('#pw_current').value;
     const nw = $('#pw_new').value;
     const cf = $('#pw_confirm').value;
     if (nw !== cf) return alert('La confirmation ne correspond pas.');
-    if (nw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractÃ¨res.');
+    if (nw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractères.');
     try {
       await API.post('/auth/change-password', { current_password: cur, new_password: nw });
       closeModal();
-      alert('Mot de passe modifiÃ© âœ“ Connectez-vous Ã  nouveau.');
+      alert('Mot de passe modifié âœ“ Connectez-vous à nouveau.');
       API.token = null;
       showLogin();
     } catch (err) {
@@ -133,7 +133,7 @@ $('#changeNameBtn').addEventListener('click', async () => {
     <div class="form-grid">
       <div class="form-field full"><label>Nom</label><input id="un_name" value="${esc(me.name || '')}" placeholder="Votre nom"></div>
       <div class="form-field full"><label>Email</label><input id="un_email" type="email" value="${esc(me.email || '')}" placeholder="Votre email"></div>
-      <div class="form-field full"><label>TÃ©lÃ©phone</label><input id="un_phone" value="${esc(me.phone || '')}" placeholder="055..."></div>
+      <div class="form-field full"><label>Téléphone</label><input id="un_phone" value="${esc(me.phone || '')}" placeholder="055..."></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
@@ -150,7 +150,7 @@ $('#changeNameBtn').addEventListener('click', async () => {
       await API.put('/auth/me', payload);
       closeModal();
       $('#adminName').textContent = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
-      alert('Nom d\'utilisateur mis Ã  jour âœ“');
+      alert('Nom d\'utilisateur mis à jour âœ“');
     } catch (err) {
       alert(err.message);
     }
@@ -183,9 +183,9 @@ async function loadDashboard() {
     <div class="stat-card"><b>${st.circuits}</b><span>Circuits</span></div>
     <div class="stat-card"><b>${st.excursions}</b><span>Excursions</span></div>
     <div class="stat-card"><b>${st.posts}</b><span>Articles</span></div>
-    <div class="stat-card pending"><b>${st.reservationsPending}</b><span>RÃ©servations en attente</span></div>
-    <div class="stat-card"><b>${st.reservationsConfirmed}</b><span>ConfirmÃ©es</span></div>
-    <div class="stat-card accent"><b>${st.reservationsTotal}</b><span>RÃ©servations totales</span></div>`;
+    <div class="stat-card pending"><b>${st.reservationsPending}</b><span>Réservations en attente</span></div>
+    <div class="stat-card"><b>${st.reservationsConfirmed}</b><span>Confirmées</span></div>
+    <div class="stat-card accent"><b>${st.reservationsTotal}</b><span>Réservations totales</span></div>`;
 
   $('#dashReservations').innerHTML = st.recentReservations.length
     ? `<table class="dash-table">${st.recentReservations.map(r => `
@@ -195,7 +195,7 @@ async function loadDashboard() {
           <td><span class="status-pill ${esc(r.status)}">${esc(r.status)}</span></td>
           <td>${fmtDate(r.created_at)}</td>
         </tr>`).join('')}</table>`
-    : '<p class="muted">Aucune rÃ©servation pour le moment.</p>';
+    : '<p class="muted">Aucune réservation pour le moment.</p>';
 
   $('#dashUsers').innerHTML = st.recentUsers.length
     ? `<table class="dash-table">${st.recentUsers.map(u => `
@@ -225,7 +225,7 @@ function renderOffers() {
           <div class="oc-tags">
             <span class="badge ${esc(o.type)}">${o.type === 'circuit' ? 'Circuit' : 'Excursion'}</span>
             ${o.category ? `<span class="badge inactive">${esc(o.category)}</span>` : ''}
-            ${!o.active ? '<span class="badge inactive">MasquÃ©e</span>' : ''}
+            ${!o.active ? '<span class="badge inactive">Masquée</span>' : ''}
           </div>
           <h4>${esc(o.name)}</h4>
           ${o.price ? `<div class="oc-price">${esc(o.price)}</div>` : ''}
@@ -271,15 +271,15 @@ function openOfferForm(id) {
         </select>
       </div>
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
-      <div class="form-field"><label>Type / catÃ©gorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturelâ€¦"></div>
+      <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturelâ€¦"></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
       <div class="form-field full"><label>Image</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL de l'image (ou choisir un fichier)">
         <input id="f_image_file" type="file" accept="image/*"></div>
       ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}
-      <div class="form-field full"><label>DÃ©tails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
+      <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
       <div class="form-field full"><label>Programme</label><textarea id="f_program" style="min-height:150px" placeholder="Jour 1 : â€¦, Jour 2 : â€¦">${esc(edit?.program || '')}</textarea></div>
-      <div class="form-field"><label>DurÃ©e</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
-      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiÃ©e</label></div>
+      <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
+      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiée</label></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
@@ -330,7 +330,7 @@ function renderReservations(list) {
         <div class="res-detail">
           <strong>${esc(r.contact_name || '')}</strong>${r.contact_email ? ' Â· ' + esc(r.contact_email) : ''}${r.contact_phone ? ' Â· ' + esc(r.contact_phone) : ''}
           ${r.message ? '<br>Â« ' + esc(r.message) + ' Â»' : ''}
-          <br>CrÃ©Ã©e le ${fmtDate(r.created_at)}
+          <br>Créée le ${fmtDate(r.created_at)}
         </div>
       </div>
       <div class="res-actions">
@@ -340,7 +340,7 @@ function renderReservations(list) {
         <button class="btn-sm gray" onclick="deleteReservation(${r.id})">Suppr.</button>
       </div>
     </div>`).join('')
-  : '<p class="muted">Aucune rÃ©servation ici.</p>';
+  : '<p class="muted">Aucune réservation ici.</p>';
 }
 
 $$('#view-reservations .tab-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -356,7 +356,7 @@ async function setResStatus(id, status) {
   loadDashboard();
 }
 async function deleteReservation(id) {
-  if (!confirm('Supprimer cette rÃ©servation ?')) return;
+  if (!confirm('Supprimer cette réservation ?')) return;
   await API.del(`/reservations/${id}`);
   await loadReservations();
   loadDashboard();
@@ -386,7 +386,7 @@ function renderUsers() {
           </div>
           <h4>${esc(u.name)} ${u.id === __currentUserId ? '<span class="badge inactive">vous</span>' : ''}</h4>
           <div class="muted">${esc(u.email || 'â€”')}${u.phone ? ' Â· ' + esc(u.phone) : ''}</div>
-          <div class="muted">Inscrit le ${fmtDate(u.created_at)} Â· ${u.reservations_count || 0} rÃ©servation(s)</div>
+          <div class="muted">Inscrit le ${fmtDate(u.created_at)} Â· ${u.reservations_count || 0} réservation(s)</div>
         </div>
         <div class="oc-actions">
           <button class="btn-sm" onclick="openUserForm(${u.id})">Modifier</button>
@@ -404,9 +404,9 @@ function openUserForm(id) {
     <div class="form-grid">
       <div class="form-field full"><label>Nom complet</label><input id="u_name" value="${esc(edit?.name || '')}" placeholder="Ex : Ahmed Benali"></div>
       <div class="form-field"><label>Email</label><input id="u_email" type="email" value="${esc(edit?.email || '')}" ${edit ? 'required' : ''}></div>
-      ${!edit ? '<div class="form-field"><label>Mot de passe</label><input id="u_password" type="password" placeholder="Au moins 6 caractÃ¨res"></div>' : ''}
-      <div class="form-field"><label>TÃ©lÃ©phone</label><input id="u_phone" value="${esc(edit?.phone || '')}" placeholder="055..." ></div>
-      <div class="form-field full"><label>RÃ´le</label>
+      ${!edit ? '<div class="form-field"><label>Mot de passe</label><input id="u_password" type="password" placeholder="Au moins 6 caractères"></div>' : ''}
+      <div class="form-field"><label>Téléphone</label><input id="u_phone" value="${esc(edit?.phone || '')}" placeholder="055..." ></div>
+      <div class="form-field full"><label>Rôle</label>
         <select id="u_role">
           <option value="user" ${edit && edit.role === 'user' ? 'selected' : ''}>Utilisateur</option>
           <option value="admin" ${edit && edit.role === 'admin' ? 'selected' : ''}>Administrateur</option>
@@ -415,7 +415,7 @@ function openUserForm(id) {
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" id="saveUserBtn">${edit ? 'Enregistrer' : 'CrÃ©er le compte'}</button>
+      <button class="btn-primary" id="saveUserBtn">${edit ? 'Enregistrer' : 'Créer le compte'}</button>
     </div>`;
   openModal(edit ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur', body);
 
@@ -424,11 +424,11 @@ function openUserForm(id) {
     if (!payload.name || !payload.email) return alert('Nom et email requis.');
     try {
       if (edit) {
-        if (edit.id === __currentUserId && payload.role !== 'admin') return alert('Vous ne pouvez pas rÃ©trograder votre propre compte.');
+        if (edit.id === __currentUserId && payload.role !== 'admin') return alert('Vous ne pouvez pas rétrograder votre propre compte.');
         await API.put(`/admin/users/${edit.id}`, payload);
       } else {
         const pw = $('#u_password').value;
-        if (pw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractÃ¨res.');
+        if (pw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractères.');
         await API.post('/admin/users', { ...payload, password: pw });
       }
       closeModal();
@@ -441,23 +441,23 @@ function openUserPassword(id) {
   const u = usersCache.find(x => x.id === id);
   const body = `
     <div class="form-grid">
-      <div class="form-field full"><label>Nouveau mot de passe pour <strong>${esc(u?.name || '')}</strong></label><input id="upw_new" type="password" placeholder="Au moins 6 caractÃ¨res"></div>
-      <div class="form-field full"><label>Confirmer</label><input id="upw_confirm" type="password" placeholder="RÃ©pÃ©ter le nouveau mot de passe"></div>
+      <div class="form-field full"><label>Nouveau mot de passe pour <strong>${esc(u?.name || '')}</strong></label><input id="upw_new" type="password" placeholder="Au moins 6 caractères"></div>
+      <div class="form-field full"><label>Confirmer</label><input id="upw_confirm" type="password" placeholder="Répéter le nouveau mot de passe"></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" id="saveUwBtn">RÃ©initialiser</button>
+      <button class="btn-primary" id="saveUwBtn">Réinitialiser</button>
     </div>`;
-  openModal('RÃ©initialiser le mot de passe', body);
+  openModal('Réinitialiser le mot de passe', body);
   $('#saveUwBtn').addEventListener('click', async () => {
     const nw = $('#upw_new').value;
     const cf = $('#upw_confirm').value;
     if (nw !== cf) return alert('La confirmation ne correspond pas.');
-    if (nw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractÃ¨res.');
+    if (nw.length < 6) return alert('Le mot de passe doit faire au moins 6 caractères.');
     try {
       await API.put(`/admin/users/${id}/password`, { password: nw });
       closeModal();
-      alert('Mot de passe rÃ©initialisÃ© âœ“');
+      alert('Mot de passe réinitialisé âœ“');
     } catch (err) { alert(err.message); }
   });
 }
@@ -465,7 +465,7 @@ function openUserPassword(id) {
 async function toggleUserRole(id) {
   const u = usersCache.find(x => x.id === id);
   if (!u) return;
-  if (u.id === __currentUserId) return alert('Vous ne pouvez pas modifier votre propre rÃ´le.');
+  if (u.id === __currentUserId) return alert('Vous ne pouvez pas modifier votre propre rôle.');
   const want = u.role === 'admin' ? 'user' : 'admin';
   if (!confirm(`Passer Â« ${u.name} Â» en ${want === 'admin' ? 'administrateur' : 'utilisateur'} ?`)) return;
   try {
@@ -526,11 +526,11 @@ function openPostForm(id) {
   const body = `
     <div class="form-grid">
       <div class="form-field full"><label>Titre</label><input id="p_title" value="${esc(edit?.title || '')}"></div>
-      <div class="form-field"><label>CatÃ©gorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, ActualitÃ©â€¦"></div>
+      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualitéâ€¦"></div>
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
-      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">PubliÃ©</label></div>
+      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publié</label></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
@@ -564,7 +564,7 @@ async function loadExtra() {
   const s = await API.get('/admin/settings');
   const meta = [
     { key: 'hero_quote', label: 'Citation d\'accueil' },
-    { key: 'agence_phones', label: 'TÃ©lÃ©phones affichÃ©s' },
+    { key: 'agence_phones', label: 'Téléphones affichés' },
     { key: 'agence_email', label: 'Email contact' },
     { key: 'agence_address', label: 'Adresse' },
     { key: 'instagram_url', label: 'Lien Instagram' },
@@ -581,7 +581,7 @@ async function loadExtra() {
     const payload = {};
     meta.forEach(m => payload[m.key] = $(`#x_${m.key}`).value);
     await API.put('/admin/settings', payload);
-    alert('EnregistrÃ© âœ“');
+    alert('Enregistré âœ“');
   });
 }
 

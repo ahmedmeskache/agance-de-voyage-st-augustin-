@@ -44,11 +44,12 @@ function seedAdmin() {
 }
 seedAdmin();
 
-// Seed a few offers so public pages aren't empty on a fresh deploy.
-// Idempotent: only inserts when the offers table is empty.
+// Seed sample offers ONLY once (on the very first boot). A settings flag
+// records that seeding happened, so it is never re-run — even if the user
+// deletes every offer — otherwise their deletions would reappear on redeploy.
 function seedOffers() {
-  const count = db.prepare('SELECT COUNT(*) AS n FROM offers').get().n;
-  if (count > 0) return;
+  const already = db.prepare('SELECT value FROM settings WHERE key = ?').get('seeded_offers');
+  if (already) return;
   const insert = db.prepare(
     `INSERT INTO offers (type, name, category, details, program, price, duration, image, active)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`
@@ -82,6 +83,7 @@ function seedOffers() {
   for (const s of samples) {
     insert.run(s.type, s.name, s.category, s.details, s.program, s.price, s.duration, s.image || null);
   }
+  db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run('seeded_offers', '1');
   console.log(`[seed] Offres -> ${samples.length} exemples créés`);
 }
 seedOffers();
