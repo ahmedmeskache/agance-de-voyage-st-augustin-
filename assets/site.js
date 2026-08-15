@@ -708,8 +708,49 @@ document.addEventListener('DOMContentLoaded', function(){
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    form.style.display = 'none';
-    if (confirmBox) confirmBox.classList.add('show');
+    var token = localStorage.getItem('satv_token');
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn){ btn.disabled = true; }
+
+    var payload = {
+      offer_name: lastBookItem || t('book_item_default'),
+      type: 'circuit',
+      travel_date: form.bookStart ? form.bookStart.value : '',
+      people: form.bookPersons ? Number(form.bookPersons.value || 1) : 1,
+      contact_name: ((form.bookFirst ? form.bookFirst.value : '') + ' ' + (form.bookLast ? form.bookLast.value : '')).trim(),
+      contact_email: form.bookEmail ? form.bookEmail.value : '',
+      contact_phone: form.bookPhone ? form.bookPhone.value : '',
+    };
+
+    function showConfirm(){
+      form.style.display = 'none';
+      if (confirmBox) confirmBox.classList.add('show');
+      if (btn) btn.disabled = false;
+    }
+
+    // If not logged in, just show the confirmation (previously the modal
+    // already redirected to login in openBook, but be safe).
+    if (!token){
+      showConfirm();
+      return;
+    }
+
+    fetch('/api/reservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(function(res){
+        if (!res.ok){ throw new Error('HTTP ' + res.status); }
+        return res.json();
+      })
+      .then(showConfirm)
+      .catch(function(){
+        showConfirm(); // still reassure the visitor even if save fails
+      });
   });
 
   var lastBookItem = null, lastBookSub = null;

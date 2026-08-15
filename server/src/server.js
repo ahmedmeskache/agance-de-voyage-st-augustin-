@@ -98,6 +98,16 @@ app.use('/api/admin', adminRoutes);
 // Probe route
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
+// Public settings (safe, display-only fields set in the admin "Extra" section).
+// Only these whitelisted keys are exposed to the public website.
+app.get('/api/settings', (req, res) => {
+  const allow = ['hero_quote', 'agence_phones', 'agence_email', 'agence_address', 'instagram_url', 'facebook_url'];
+  const rows = db.prepare('SELECT key, value FROM settings').all();
+  const obj = {};
+  rows.forEach((r) => { if (allow.includes(r.key)) obj[r.key] = r.value; });
+  return res.json(obj);
+});
+
 // Uploaded images (public)
 app.use('/uploads', express.static(UPLOADS, { maxAge: '7d' }));
 
