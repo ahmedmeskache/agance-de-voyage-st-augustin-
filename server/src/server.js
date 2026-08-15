@@ -25,6 +25,7 @@ app.use(express.json({ limit: '2mb' }));
 
 import db from './db.js';
 import bcrypt from 'bcryptjs';
+import { translateFields } from './translate.js';
 
 // Seed (or update) the admin account so env variables always take effect.
 function seedAdmin() {
@@ -128,6 +129,61 @@ app.use((req, res, next) => {
 });
 app.use(express.static(ROOT));
 
+// A saved row only needs (re)translation when the EN/AR value is missing or
+// looks truncated by the old 500-character cap (stored far shorter than the
+// French source). Runs in the background at boot so existing articles/offers
+// created before auto-translation get their title/excerpt/content filled.
+function needsTranslation(base, translated) {
+  if (!base || !String(base).trim()) return false;
+  const s = String(base).trim();
+  const t = String(translated || '').trim();
+  if (!t) return true;
+  return s.length > 500 && t.length < s.length * 0.6;
+}
+
+async function backfillTranslations() {
+  try {
+    const posts = db.prepare('SELECT * FROM posts').all();
+    for (const p of posts) {
+      const fields = [];
+      if (needsTranslation(p.title, p.title_en)) fields.push({ key: 'title', value: p.title });
+      if (needsTranslation(p.excerpt, p.excerpt_en)) fields.push({ key: 'excerpt', value: p.excerpt });
+      if (needsTranslation(p.content, p.content_en)) fields.push({ key: 'content', value: p.content });
+      if (!fields.length) continue;
+      const map = await translateFields(fields);
+      const sets = [];
+      const vals = [];
+      for (const [key, r] of Object.entries(map)) {
+        sets.push(`${key}_en = ?`, `${key}_ar = ?`);
+        vals.push(r.en || null, r.ar || null);
+      }
+      vals.push(p.id);
+      db.prepare(`UPDATE posts SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
+      console.log(`[backfill] Article #${p.id} traduit : ${fields.map((f) => f.key).join(', ')}`);
+    }
+    const offers = db.prepare('SELECT * FROM offers').all();
+    for (const o of offers) {
+      const fields = [];
+      if (needsTranslation(o.name, o.name_en)) fields.push({ key: 'name', value: o.name });
+      if (needsTranslation(o.details, o.details_en)) fields.push({ key: 'details', value: o.details });
+      if (needsTranslation(o.program, o.program_en)) fields.push({ key: 'program', value: o.program });
+      if (!fields.length) continue;
+      const map = await translateFields(fields);
+      const sets = [];
+      const vals = [];
+      for (const [key, r] of Object.entries(map)) {
+        sets.push(`${key}_en = ?`, `${key}_ar = ?`);
+        vals.push(r.en || null, r.ar || null);
+      }
+      vals.push(o.id);
+      db.prepare(`UPDATE offers SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
+      console.log(`[backfill] Offre #${o.id} traduite : ${fields.map((f) => f.key).join(', ')}`);
+    }
+  } catch (err) {
+    console.error('[backfill] Échec de la traduction automatique :', err.message);
+  }
+}
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\nSaint Augustin tourisme backend démarré`);
@@ -136,3 +192,5 @@ app.listen(PORT, () => {
   console.log(`  API health   : http://localhost:${PORT}/api/health\n`);
   console.log(`[note] Connecteurs Google/Facebook: renseignez les clés dans server/.env (voir .env.example)`);
 });
+// Translate existing content in the background so it doesn't slow down boot.
+backfillTranslations();
