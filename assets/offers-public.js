@@ -56,11 +56,11 @@
     const details = t.details ? '<p class="offer-details">' + esc(t.details) + '</p>' : '';
     const content = JSON.stringify(texts).replace(/"/g, '&quot;');
     const detailBtn = o._hasProgram
-      ? '<button type="button" class="btn outline offer-detail-btn" data-program="' + esc(t.program || '') + '" data-offer-name="' + esc(t.name || '') + '">' + esc(lbl('quiz_detail')) + '</button>'
+      ? '<button type="button" class="btn outline offer-detail-btn" data-offer-id="' + esc(o.id) + '">' + esc(lbl('quiz_detail')) + '</button>'
       : '';
 
     return (
-      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '" data-lang-content="' + content + '">' +
+      '<div class="card offer-card" data-offer-id="' + esc(o.id) + '" data-lang-content="' + content + '" data-offer-name="' + esc(o.name) + '" data-offer-img="' + esc(imgs.fr) + '" data-offer-img-en="' + esc(imgs.en) + '" data-offer-img-ar="' + esc(imgs.ar) + '" data-offer-duration="' + esc(o.duration || '') + '" data-offer-category="' + esc(o.category || '') + '" data-offer-price="' + esc(o.price || '') + '" data-offer-details="' + esc(o.details || '') + '" data-offer-details-en="' + esc(o.details_en || '') + '" data-offer-details-ar="' + esc(o.details_ar || '') + '" data-offer-program="' + esc(o.program || '') + '" data-offer-program-en="' + esc(o.program_en || '') + '" data-offer-program-ar="' + esc(o.program_ar || '') + '" data-offer-name-en="' + esc(o.name_en || '') + '" data-offer-name-ar="' + esc(o.name_ar || '') + '">' +
         '<div class="card-media">' + img + '</div>' +
         '<div class="card-body">' +
           meta +
@@ -76,23 +76,58 @@
     );
   }
 
-  function programModal(program, name) {
-    const old = document.getElementById('offerProgramModal');
+  function offerDetailModal(card) {
+    const old = document.getElementById('offerDetailModal');
     if (old) old.remove();
-    const m = document.createElement('div');
-    m.id = 'offerProgramModal';
-    m.style.cssText = 'position:fixed;inset:0;background:rgba(10,18,30,.6);display:flex;align-items:center;justify-content:center;z-index:600;padding:20px;font-family:inherit;';
-    m.innerHTML =
-      '<div style="background:#fff;border-radius:16px;width:520px;max-width:100%;max-height:88vh;overflow:auto;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.4);font-family:\'Montserrat\',sans-serif">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">' +
-          '<h3 style="margin:0;color:#122a4d;font-family:\'Playfair Display\',serif">' + esc(name) + '</h3>' +
-          '<button class="offer-modal-close" style="border:none;background:none;font-size:26px;cursor:pointer;color:#666">×</button>' +
-        '</div>' +
-        '<div style="white-space:pre-wrap;color:#333;font-size:14px;line-height:1.7;font-family:inherit">' + esc(program) + '</div>' +
-      '</div>';
-    document.body.appendChild(m);
-    m.querySelector('.offer-modal-close').addEventListener('click', function () { m.remove(); });
-    m.addEventListener('click', function (e) { if (e.target === m) m.remove(); });
+    const lang = (window.currentLang || 'fr');
+
+    function pick(base, en, ar) {
+      if (lang === 'en') return (en || base || '');
+      if (lang === 'ar') return (ar || base || '');
+      return (base || '');
+    }
+    function attr(name) { return card.getAttribute(name) || ''; }
+
+    const name = pick(attr('data-offer-name'), attr('data-offer-name-en'), attr('data-offer-name-ar'));
+    const details = pick(attr('data-offer-details'), attr('data-offer-details-en'), attr('data-offer-details-ar'));
+    const program = pick(attr('data-offer-program'), attr('data-offer-program-en'), attr('data-offer-program-ar'));
+    const img = pick(attr('data-offer-img'), attr('data-offer-img-en'), attr('data-offer-img-ar'));
+
+    const chips = [];
+    if (attr('data-offer-duration')) chips.push({ k: 'duration', v: attr('data-offer-duration') });
+    if (attr('data-offer-category')) chips.push({ k: 'category', v: attr('data-offer-category') });
+    if (attr('data-offer-price')) chips.push({ k: 'price', v: attr('data-offer-price') });
+    const chipsHTML = chips.length
+      ? '<div class="detail-info">' + chips.map(function (c) { return '<span class="detail-chip">' + esc(c.v) + '</span>'; }).join('') + '</div>'
+      : '';
+
+    const hero = img
+      ? '<div class="detail-hero"><img src="' + esc(img) + '" alt="' + esc(name) + '"></div>'
+      : '';
+
+    const body = document.createElement('div');
+    body.className = 'detail-content';
+    body.innerHTML =
+      '<button class="offer-modal-close" type="button" aria-label="Close">×</button>' +
+      hero +
+      '<h3 class="detail-title">' + esc(name) + '</h3>' +
+      chipsHTML +
+      (details ? '<p class="detail-text">' + esc(details) + '</p>' : '') +
+      (program ? '<h4 class="detail-sec">' + esc(lbl('program_title')) + '</h4><div class="detail-program"><div class="detail-step"><div class="step-body"><span>' + esc(program) + '</span></div></div></div>' : '') +
+      '<div class="detail-actions"><button type="button" class="btn reserve-btn" data-book="' + esc(name) + '">' + esc(lbl('btn_reserve')) + '</button></div>';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'offerDetailModal';
+    overlay.className = 'offer-detail-overlay';
+    overlay.appendChild(body);
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.offer-modal-close').addEventListener('click', function () { overlay.remove(); });
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) overlay.remove(); });
+    body.querySelector('.reserve-btn').addEventListener('click', function () {
+      overlay.remove();
+      if (window.siteOpenBookModal) window.siteOpenBookModal(this.getAttribute('data-book'));
+    });
   }
 
   async function render(container) {
@@ -142,7 +177,7 @@
         });
         var db = card.querySelector('.offer-detail-btn');
         if (db) db.addEventListener('click', function () {
-          programModal(db.getAttribute('data-program'), db.getAttribute('data-offer-name'));
+          offerDetailModal(card);
         });
       });
     } catch (e) {
