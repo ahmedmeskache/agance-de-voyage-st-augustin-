@@ -167,6 +167,28 @@ router.post('/change-password', authRequired, (req, res) => {
   return res.json({ ok: true });
 });
 
+// Update the current user's own name / email (self-serve)
+router.put('/me', authRequired, (req, res) => {
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.user.id);
+  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+  const { name, email, phone } = req.body || {};
+  const newEmail = email !== undefined ? String(email).trim() : user.email;
+  if (newEmail && newEmail !== user.email) {
+    const clash = db.prepare('SELECT id FROM users WHERE email = ? AND id != ?').get(newEmail, user.id);
+    if (clash) return res.status(409).json({ error: 'Un autre compte utilise déjà cet email.' });
+  }
+  db.prepare('UPDATE users SET name = COALESCE(?, name), email = COALESCE(?, email), phone = ? WHERE id = ?')
+    .run(
+      name !== undefined ? String(name).trim() || null : null,
+      newEmail || null,
+      phone !== undefined ? String(phone).trim() || null : user.phone,
+      user.id
+    );
+  const updated = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+  const { password_hash, ...rest } = updated;
+  return res.json({ user: rest });
+});
+
 // lazily import jwt to avoid a second module in this file
 import jwt from 'jsonwebtoken';
 function jwtVerify(token) {

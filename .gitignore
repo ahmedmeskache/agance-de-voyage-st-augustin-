@@ -9,6 +9,8 @@ server/.env
 # Database file (created at runtime, don't commit)
 server/src/data/*.db
 server/src/data/*.db-journal
+server/src/data/*.db-shm
+server/src/data/*.db-wal
 
 # Uploaded photos (created at runtime, don't commit — use a Railway volume instead)
 uploads/*

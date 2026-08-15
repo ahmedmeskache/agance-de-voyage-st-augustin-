@@ -38,6 +38,48 @@ function seedAdmin() {
 }
 seedAdmin();
 
+// Seed a few offers so public pages aren't empty on a fresh deploy.
+// Idempotent: only inserts when the offers table is empty.
+function seedOffers() {
+  const count = db.prepare('SELECT COUNT(*) AS n FROM offers').get().n;
+  if (count > 0) return;
+  const insert = db.prepare(
+    `INSERT INTO offers (type, name, category, details, program, price, duration, image, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`
+  );
+  const samples = [
+    {
+      type: 'circuit', name: 'Circuit Annaba – Hippone & Basilique Saint Augustin',
+      category: 'Spirituel', price: 'Dès 7 500 DA', duration: '1 jour',
+      details: 'Visite guidée de la Basilique Saint Augustin, du théâtre antique de Guelma et du vieux port.',
+      program: 'Matin : Basilique Saint Augustin & promenade sur la Corniche.\nAprès-midi : Théâtre romain de Guelma et retour.',
+    },
+    {
+      type: 'circuit', name: 'Omra Ramadan 2026 – La Mecque & Médine',
+      category: 'Omra', price: 'Sur demande', duration: '12 jours / 11 nuits',
+      details: 'Un accompagnement spirituel complet pour vivre l\'Omra en toute sérénité.',
+      program: 'Départ d\'Annaba vers Istanbul, puis Jeddah.\nHôtels proches du Haram et du Masjid Nabawi.\nAccompagnement et encadrement par notre équipe.',
+    },
+    {
+      type: 'excursion', name: 'Excursion Constantine – Cirta',
+      category: 'Culturel', price: 'Dès 4 500 DA', duration: '1 jour',
+      details: 'Découverte des ponts suspendus, de la ville palmaire et du musée Cirta.',
+      program: 'Pont Sidi M\'Cid, Pont suspendu, palais Ahmed Bey.\nDéjeuner typique et temps libre au centre-ville.',
+    },
+    {
+      type: 'excursion', name: 'Excursion plage – Djenane El Bey',
+      category: 'Nature', price: 'Dès 3 000 DA', duration: '1 jour',
+      details: 'Une journée détente au bord de la Méditerranée, transat et déjeuner inclus.',
+      program: 'Transfert aller-retour depuis Annaba.\nAccès plage privée, boissons et déjeuner inclus.',
+    },
+  ];
+  for (const s of samples) {
+    insert.run(s.type, s.name, s.category, s.details, s.program, s.price, s.duration, s.image || null);
+  }
+  console.log(`[seed] Offres -> ${samples.length} exemples créés`);
+}
+seedOffers();
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/offers', offerRoutes);
