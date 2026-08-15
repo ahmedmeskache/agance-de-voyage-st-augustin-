@@ -26,7 +26,18 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
   },
 });
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
+// Allow up to 3 images: image (FR), image_en, image_ar
+const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } }).fields([
+  { name: 'image', maxCount: 1 },
+  { name: 'image_en', maxCount: 1 },
+  { name: 'image_ar', maxCount: 1 },
+]);
+
+function imgField(req, name, urlVal) {
+  if (req.files && req.files[name] && req.files[name][0]) return `/uploads/${req.files[name][0].filename}`;
+  if (urlVal) return urlVal;
+  return undefined; // no change / absent
+}
 
 // GET /api/offers?type=circuit|excursion&page=local|international|omra|etranger|excursions&all=1
 // (public: active only unless admin all)
@@ -49,26 +60,30 @@ router.get('/:id', (req, res) => {
   return res.json(offer);
 });
 
-// POST /api/offers (admin) â€” optional image file or image_url
-router.post('/', contentRequired, upload.single('image'), (req, res) => {
-  const { type, page, name, category, details, program, price, duration, image_url, active } = req.body || {};
+// POST /api/offers (admin) â€” optional image file(s) or image_url(s)
+router.post('/', contentRequired, upload, (req, res) => {
+  const { type, page, name, category, details, program, price, duration, image_url, image_en_url, image_ar_url, active } = req.body || {};
   if (!type || !name) return res.status(400).json({ error: 'Type et nom requis.' });
-  const image = req.file ? `/uploads/${req.file.filename}` : (image_url || null);
+  const image = imgField(req, 'image', image_url);
+  const image_en = imgField(req, 'image_en', image_en_url);
+  const image_ar = imgField(req, 'image_ar', image_ar_url);
   const info = db.prepare(
-    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, active)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(type, page || null, name, category || null, details || null, program || null, price || null, duration || null, image, parseActive(active));
+    `INSERT INTO offers (type, page, name, category, details, program, price, duration, image, image_en, image_ar, active)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  ).run(type, page || null, name, category || null, details || null, program || null, price || null, duration || null, image, image_en, image_ar, parseActive(active));
   return res.status(201).json(db.prepare('SELECT * FROM offers WHERE id = ?').get(info.lastInsertRowid));
 });
 
-// PUT /api/offers/:id (admin) â€” mix of fields; image optional
-router.put('/:id', contentRequired, upload.single('image'), (req, res) => {
+// PUT /api/offers/:id (admin) â€” mix of fields; image(s) optional
+router.put('/:id', contentRequired, upload, (req, res) => {
   const offer = db.prepare('SELECT * FROM offers WHERE id = ?').get(req.params.id);
   if (!offer) return res.status(404).json({ error: 'Offre introuvable.' });
   const b = req.body || {};
-  const image = req.file ? `/uploads/${req.file.filename}` : (b.image_url !== undefined ? b.image_url : offer.image);
+  const image = imgField(req, 'image', b.image_url);
+  const image_en = imgField(req, 'image_en', b.image_en_url);
+  const image_ar = imgField(req, 'image_ar', b.image_ar_url);
   db.prepare(
-    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, active=? WHERE id=?`
+    `UPDATE offers SET type=?, page=?, name=?, category=?, details=?, program=?, price=?, duration=?, image=?, image_en=?, image_ar=?, active=? WHERE id=?`
   ).run(
     b.type || offer.type,
     b.page !== undefined ? b.page : offer.page,
@@ -78,7 +93,9 @@ router.put('/:id', contentRequired, upload.single('image'), (req, res) => {
     b.program !== undefined ? b.program : offer.program,
     b.price !== undefined ? b.price : offer.price,
     b.duration !== undefined ? b.duration : offer.duration,
-    image,
+    image !== undefined ? image : offer.image,
+    image_en !== undefined ? image_en : offer.image_en,
+    image_ar !== undefined ? image_ar : offer.image_ar,
     b.active !== undefined ? parseActive(b.active) : offer.active,
     offer.id
   );

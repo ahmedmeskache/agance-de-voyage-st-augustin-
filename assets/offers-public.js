@@ -14,8 +14,16 @@
   }
 
   function cardHTML(o) {
-    const img = o.image
-      ? '<img src="' + esc(o.image) + '" alt="' + esc(o.name) + '" loading="lazy">'
+    // Per-language images: default (FR) always exists via o.image.
+    const imgs = {
+      fr: o.image,
+      en: o.image_en || o.image,
+      ar: o.image_ar || o.image,
+    };
+    const lang = (window.currentLang || 'fr');
+    const active = imgs[lang] || imgs.fr;
+    const img = active
+      ? '<img class="offer-img" data-fr="' + esc(imgs.fr) + '" data-en="' + esc(imgs.en) + '" data-ar="' + esc(imgs.ar) + '" src="' + esc(active) + '" alt="' + esc(o.name) + '" loading="lazy">'
       : '<div class="icon-media"><span class="icon-glyph">🗺️</span></div>';
     const chips = [];
     if (o.duration) chips.push('🗓️ ' + esc(o.duration));
@@ -104,8 +112,31 @@
     }
   }
 
+  // Swap every offer image to the current language when the site language
+  // changes. Works on cards already in the DOM (including ones added later).
+  function applyLangImages() {
+    const lang = (window.currentLang || 'fr');
+    document.querySelectorAll('img.offer-img').forEach(function (img) {
+      const src = img.getAttribute('data-' + lang) || img.getAttribute('data-fr');
+      if (src) img.src = src;
+    });
+  }
+
+  // Re-apply after cards render, since render() is async and may complete
+  // after the language was already set.
+  const _origRender = render;
+  render = function (container) {
+    _origRender(container).then(applyLangImages).catch(function () {});
+  };
+
   function init() {
     document.querySelectorAll(CONTAINER).forEach(render);
+    if (window._langHandlers) {
+      window._langHandlers.push(applyLangImages);
+    } else {
+      window._langHandlers = [applyLangImages];
+    }
+    applyLangImages();
   }
 
   if (document.readyState === 'loading') {

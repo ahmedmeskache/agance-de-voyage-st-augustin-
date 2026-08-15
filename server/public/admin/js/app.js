@@ -272,9 +272,15 @@ function openOfferForm(id) {
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
       <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel…"></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
-      <div class="form-field full"><label>Image</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL de l'image (ou choisir un fichier)">
-        <input id="f_image_file" type="file" accept="image/*"></div>
-      ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}
+      <div class="form-field full"><label>Image — Français</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL (ou choisir un fichier)">
+        <input id="f_image_file" type="file" accept="image/*">
+        ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}</div>
+      <div class="form-field full"><label>Image — English</label><input id="f_image_en_url" value="${esc(edit?.image_en || '')}" placeholder="URL (ou choisir un fichier)">
+        <input id="f_image_en_file" type="file" accept="image/*">
+        ${edit && edit.image_en ? `<img class="img-preview" src="${esc(edit.image_en)}">` : ''}</div>
+      <div class="form-field full"><label>Image — العربية</label><input id="f_image_ar_url" value="${esc(edit?.image_ar || '')}" placeholder="URL (ou choisir un fichier)">
+        <input id="f_image_ar_file" type="file" accept="image/*">
+        ${edit && edit.image_ar ? `<img class="img-preview" src="${esc(edit.image_ar)}">` : ''}</div>
       <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
       <div class="form-field full"><label>Programme</label><textarea id="f_program" style="min-height:150px" placeholder="Jour 1 : …, Jour 2 : …">${esc(edit?.program || '')}</textarea></div>
       <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
@@ -320,9 +326,17 @@ function openOfferForm(id) {
     fd.append('program', $('#f_program').value);
     fd.append('duration', $('#f_duration').value);
     fd.append('active', $('#f_active').checked ? '1' : '0');
-    const file = $('#f_image_file').files[0];
-    if (file) fd.append('image', file);
-    else fd.append('image_url', $('#f_image_url').value);
+    const frFile = $('#f_image_file').files[0];
+    if (frFile) fd.append('image', frFile);
+    else if ($('#f_image_url').value) fd.append('image_url', $('#f_image_url').value);
+
+    const enFile = $('#f_image_en_file').files[0];
+    if (enFile) fd.append('image_en', enFile);
+    else if ($('#f_image_en_url').value) fd.append('image_en_url', $('#f_image_en_url').value);
+
+    const arFile = $('#f_image_ar_file').files[0];
+    if (arFile) fd.append('image_ar', arFile);
+    else if ($('#f_image_ar_url').value) fd.append('image_ar_url', $('#f_image_ar_url').value);
 
     try {
       if (edit) await API.upload('PUT', `/offers/${edit.id}`, fd);

@@ -11,10 +11,16 @@ const db = new Database(path.join(dataDir, 'satv.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
-// Migration: add `page` column to offers if it doesn't exist (existing DBs).
+// Migration: add `page` and per-language image columns if they don't exist.
 const offersCols = db.prepare(`PRAGMA table_info(offers)`).all().map(c => c.name);
 if (!offersCols.includes('page')) {
   db.exec(`ALTER TABLE offers ADD COLUMN page TEXT;`);
+}
+if (!offersCols.includes('image_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN image_en TEXT;`);
+}
+if (!offersCols.includes('image_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN image_ar TEXT;`);
 }
 
 db.exec(`
@@ -40,7 +46,9 @@ CREATE TABLE IF NOT EXISTS offers (
   program     TEXT,                        -- full program (multi-line)
   price       TEXT,
   duration    TEXT,
-  image       TEXT,
+  image       TEXT,                        -- default / French image
+  image_en    TEXT,                        -- English image
+  image_ar    TEXT,                        -- Arabic image
   active      INTEGER NOT NULL DEFAULT 1,
   created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
 );
