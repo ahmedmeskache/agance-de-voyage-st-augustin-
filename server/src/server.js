@@ -138,6 +138,10 @@ function needsTranslation(base, translated) {
   const s = String(base).trim();
   const t = String(translated || '').trim();
   if (!t) return true;
+  // A failed auto-translation used to store the French text itself as the
+  // "translation" — re-translate those too.
+  if (t === s) return true;
+  // Old versions truncated content at 500 characters.
   return s.length > 500 && t.length < s.length * 0.6;
 }
 

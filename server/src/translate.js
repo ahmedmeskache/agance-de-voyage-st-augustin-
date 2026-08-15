@@ -1,28 +1,54 @@
 // Lightweight auto-translation helper using the free MyMemory API
-// (no API key required). Falls back to the original text on any failure
-// so offers/articles are always saved even if translation is temporarily
-// unavailable. Long texts are split into chunks (MyMemory caps each request
-// at ~500 characters) and translated block by block, preserving the
-// paragraph / heading structure used by the site.
+// (no API key required). Returns null on any failure so the caller stores
+// nothing for the EN/AR field — the site then shows the French original and
+// the boot-time backfill retries the field later. Long texts are split into
+// chunks (MyMemory caps each request at ~500 characters) and translated
+// block by block, preserving the paragraph / heading structure used by the site.
 
 const CHUNK_MAX = 480; // safe margin under MyMemory's per-request limit
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// A MyMemory response that means "translation failed" (rate limit, quota
+// exhausted, malformed request...) rather than a real translation.
+const FAIL_MARKERS = [
+  'invalid request',
+  'query length',
+  'free translations for today',
+  'too many requests',
+  'rate limit',
+  'all available',
+  'usage limits',
+];
+
+function isFailure(out) {
+  const low = String(out).toLowerCase();
+  return FAIL_MARKERS.some((m) => low.includes(m));
+}
+
 async function translateChunk(text, to) {
-  try {
-    const q = encodeURIComponent(text);
-    const url = `https://api.mymemory.translated.net/get?q=${q}&langpair=fr|${to}`;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) return null;
-    const data = await res.json();
-    const out = data && data.responseData && data.responseData.translatedText;
-    if (!out || out.toLowerCase() === 'invalid request' || /QUERY LENGTH/.test(out)) return null;
-    return out;
-  } catch (_) {
-    return null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const q = encodeURIComponent(text);
+      const url = `https://api.mymemory.translated.net/get?q=${q}&langpair=fr|${to}`;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 7000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timer);
+      if (res.status === 429) {
+        await sleep(800 * (attempt + 1));
+        continue;
+      }
+      if (!res.ok) return null;
+      const data = await res.json();
+      const out = data && data.responseData && data.responseData.translatedText;
+      if (!out || isFailure(out)) return null;
+      return out;
+    } catch (_) {
+      // transient network/abort error -> retry
+    }
   }
+  return null;
 }
 
 // Split a piece of body text (no blank lines inside) into chunks no longer
@@ -59,24 +85,25 @@ function splitChunks(body) {
 }
 
 // Translate a block of text (may contain single line breaks, no blank
-// lines) while keeping its structure.
+// lines) while keeping its structure. Returns null if any chunk fails, so
+// the whole field is treated as untranslated and retried later.
 async function translateBody(body, to) {
-  if (!body) return body || '';
-  if (body.length <= CHUNK_MAX) {
-    const out = await translateChunk(body, to);
-    return out || body;
-  }
+  if (!body) return null;
+  if (body.length <= CHUNK_MAX) return translateChunk(body, to);
   const chunks = splitChunks(body);
   const out = [];
   for (const c of chunks) {
-    out.push((await translateChunk(c, to)) || c);
+    const r = await translateChunk(c, to);
+    if (!r) return null;
+    out.push(r);
   }
   return out.join('\n');
 }
 
 // Translate a full field preserving blank-line (paragraph/heading) structure.
+// Returns null if anything fails (so nothing wrong is stored).
 async function translate(text, to) {
-  if (!text || !String(text).trim()) return text || '';
+  if (!text || !String(text).trim()) return null;
   const s = String(text);
   const blocks = s.split(/(\n\s*\n)/); // keep blank-line separators intact
   const parts = [];
@@ -85,11 +112,9 @@ async function translate(text, to) {
     const trimmed = b.trim();
     if (!trimmed) continue;
     const m = trimmed.match(/^(#{1,3}\s)([\s\S]+)$/);
-    if (m) {
-      parts.push(m[1] + await translateBody(m[2], to));
-    } else {
-      parts.push(await translateBody(trimmed, to));
-    }
+    const r = m ? await translateBody(m[2], to) : await translateBody(trimmed, to);
+    if (r == null) return null; // any block failure -> field untranslated
+    parts.push(m ? m[1] + r : r);
   }
   return parts.join('');
 }
