@@ -18,19 +18,12 @@
       <p>Espace administrateur</p>
     </div>
     <div id="loginError" class="form-error hidden"></div>
-    <div class="login-role">
-      <span>Vous vous connectez en tant que :</span>
-      <div class="role-toggle">
-        <button type="button" class="role-opt active" data-role="admin">Administrateur</button>
-        <button type="button" class="role-opt" data-role="user">Utilisateur</button>
-      </div>
-    </div>
     <form id="loginForm">
-      <input id="loginEmail" type="email" placeholder="Email" required>
+      <input id="loginEmail" type="email" placeholder="Email admin" required>
       <input id="loginPassword" type="password" placeholder="Mot de passe" required>
       <button type="submit" class="btn-primary">Se connecter</button>
     </form>
-    <p class="login-hint">Les comptes utilisateurs ont un accès limité au contenu. Les administrateurs ont un accès complet.</p>
+    <p class="login-hint">Accès réservé aux administrateurs.</p>
   </div>
 </div>
 
@@ -46,7 +39,7 @@
       <a href="#dashboard" data-view="dashboard" class="active"><span class="nav-ico">📊</span>Tableau de bord</a>
       <a href="#offers" data-view="offers"><span class="nav-ico">🧭</span>Circuits &amp; Excursions</a>
       <a href="#reservations" data-view="reservations"><span class="nav-ico">📋</span>Réservations</a>
-      <a href="#users" data-view="users"><span class="nav-ico">👥</span>Utilisateurs</a>
+      <a href="#users" data-view="users"><span class="nav-ico">👥</span>Admins</a>
       <a href="#blog" data-view="blog"><span class="nav-ico">📝</span>Blog</a>
       <a href="#extra" data-view="extra"><span class="nav-ico">✨</span>Extra</a>
     </nav>
@@ -107,8 +100,8 @@
     <!-- Users -->
     <section id="view-users" class="view hidden">
       <div class="view-head">
-        <h2>Utilisateurs &amp; Comptes</h2>
-        <button id="addUserBtn" class="btn-primary">+ Nouvel utilisateur</button>
+        <h2>Admins &amp; Managers</h2>
+        <button id="addUserBtn" class="btn-primary">+ Nouveau compte admin</button>
       </div>
       <div id="userList"></div>
     </section>

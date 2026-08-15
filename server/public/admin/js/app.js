@@ -6,10 +6,7 @@ function showLogin() { loginView.classList.remove('hidden'); appView.classList.a
 function showApp() { loginView.classList.add('hidden'); appView.classList.remove('hidden'); }
 
 let __currentUserId = 0;
-let __currentRole = 'user';
-
-// Selected login role (admin or user)
-let loginRole = 'admin';
+let __currentRole = 'admin';
 
 // Admin full: everything. Manager & user: content only (no Users, no Extra/settings)
 const ADMIN_ONLY_VIEWS = ['users', 'extra'];
@@ -51,17 +48,6 @@ if (API.token) {
   showLogin();
 }
 
-// ---------- Role toggle on login ----------
-document.querySelectorAll('.role-opt').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.role-opt').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    loginRole = btn.dataset.role;
-    // Adapt placeholder of the email field
-    $('#loginEmail').placeholder = loginRole === 'admin' ? 'Email admin' : 'Votre email';
-  });
-});
-
 // ---------- Login ----------
 $('#loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -70,14 +56,13 @@ $('#loginForm').addEventListener('submit', async (e) => {
   const errBox = $('#loginError');
   errBox.classList.add('hidden');
   try {
-    // Admin login requires an admin/manager account; user login is the public endpoint.
-    const endpoint = loginRole === 'admin' ? '/auth/admin/login' : '/auth/login';
-    const data = await API.post(endpoint, { email, password });
+    // Admin panel is only for administrators/managers.
+    const data = await API.post('/auth/admin/login', { email, password });
     API.token = data.token;
     __currentUserId = data.user.id;
     __currentRole = data.user.role;
     $('#adminName').textContent = (data.user.name || __currentRole).charAt(0).toUpperCase() + (data.user.name || __currentRole).slice(1);
-    const roleLabel = __currentRole === 'admin' ? 'Administrateur' : (__currentRole === 'manager' ? 'Manager' : 'Utilisateur');
+    const roleLabel = __currentRole === 'admin' ? 'Administrateur' : 'Manager';
     $('#adminRole').textContent = '👤 ' + roleLabel;
     errBox.classList.add('hidden');
     showApp();
@@ -408,29 +393,32 @@ async function loadUsers() {
 }
 
 function renderUsers() {
-  $('#userList').innerHTML = usersCache.length ? `
+  // Only staff accounts (admin / manager) are manageable here. Regular
+  // website users are excluded so they can never be promoted to admin.
+  const staff = usersCache.filter(u => u.role === 'admin' || u.role === 'manager');
+  $('#userList').innerHTML = staff.length ? `
     <div class="list-tools">
-      <span class="muted">${usersCache.length} compte(s)</span>
+      <span class="muted">${staff.length} compte(s) d'administration</span>
     </div>
-    ${usersCache.map(u => `
+    ${staff.map(u => `
       <div class="offer-card user-card">
         <div class="oc-body" style="flex:1">
           <div class="oc-tags">
-            <span class="badge ${u.role === 'admin' ? 'admin' : 'inactive'}">${u.role === 'admin' ? 'Admin' : 'Utilisateur'}</span>
+            <span class="badge ${u.role === 'admin' ? 'admin' : 'inactive'}">${u.role === 'admin' ? 'Admin' : 'Manager'}</span>
             ${u.provider && u.provider !== 'email' ? `<span class="badge inactive">${esc(u.provider)}</span>` : ''}
           </div>
           <h4>${esc(u.name)} ${u.id === __currentUserId ? '<span class="badge inactive">vous</span>' : ''}</h4>
           <div class="muted">${esc(u.email || '—')}${u.phone ? ' · ' + esc(u.phone) : ''}</div>
-          <div class="muted">Inscrit le ${fmtDate(u.created_at)} · ${u.reservations_count || 0} réservation(s)</div>
+          <div class="muted">Inscrit le ${fmtDate(u.created_at)}</div>
         </div>
         <div class="oc-actions">
           <button class="btn-sm" onclick="openUserForm(${u.id})">Modifier</button>
           <button class="btn-sm gray" onclick="openUserPassword(${u.id})">Mot de passe</button>
-          <button class="btn-sm ${u.role === 'admin' ? 'green' : 'gray'}" onclick="toggleUserRole(${u.id})">${u.role === 'admin' ? 'Passer en user' : 'Passer en admin'}</button>
+          <button class="btn-sm ${u.role === 'admin' ? 'green' : 'gray'}" onclick="toggleUserRole(${u.id})">${u.role === 'admin' ? 'Passer en manager' : 'Passer en admin'}</button>
           <button class="btn-sm red" onclick="deleteUser(${u.id})">Supprimer</button>
         </div>
       </div>`).join('')}`
-    : '<p class="muted">Aucun utilisateur pour le moment.</p>';
+    : '<p class="muted">Aucun compte d\'administration pour le moment.</p>';
 }
 
 function openUserForm(id) {
@@ -443,16 +431,16 @@ function openUserForm(id) {
       <div class="form-field"><label>Téléphone</label><input id="u_phone" value="${esc(edit?.phone || '')}" placeholder="055..." ></div>
       <div class="form-field full"><label>Rôle</label>
         <select id="u_role">
-          <option value="user" ${edit && edit.role === 'user' ? 'selected' : ''}>Utilisateur</option>
-          <option value="admin" ${edit && edit.role === 'admin' ? 'selected' : ''}>Administrateur</option>
+          <option value="admin" ${!edit || edit.role === 'admin' ? 'selected' : ''}>Administrateur</option>
+          <option value="manager" ${edit && edit.role === 'manager' ? 'selected' : ''}>Manager</option>
         </select>
       </div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" id="saveUserBtn">${edit ? 'Enregistrer' : 'Créer le compte'}</button>
+      <button class="btn-primary" id="saveUserBtn">${edit ? 'Enregistrer' : 'Créer le compte admin'}</button>
     </div>`;
-  openModal(edit ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur', body);
+  openModal(edit ? 'Modifier le compte admin' : 'Nouveau compte admin', body);
 
   $('#saveUserBtn').addEventListener('click', async () => {
     const payload = { name: $('#u_name').value.trim(), email: $('#u_email').value.trim(), phone: $('#u_phone').value.trim(), role: $('#u_role').value };
@@ -501,8 +489,8 @@ async function toggleUserRole(id) {
   const u = usersCache.find(x => x.id === id);
   if (!u) return;
   if (u.id === __currentUserId) return alert('Vous ne pouvez pas modifier votre propre rôle.');
-  const want = u.role === 'admin' ? 'user' : 'admin';
-  if (!confirm(`Passer « ${u.name} » en ${want === 'admin' ? 'administrateur' : 'utilisateur'} ?`)) return;
+  const want = u.role === 'admin' ? 'manager' : 'admin';
+  if (!confirm(`Passer « ${u.name} » en ${want === 'admin' ? 'administrateur' : 'manager'} ?`)) return;
   try {
     await API.put(`/admin/users/${id}`, { role: want });
     await loadUsers();
