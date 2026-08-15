@@ -154,13 +154,24 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.use(express.static(ROOT));
+// HTML pages must always be revalidated so visitors never get stuck on a
+// cached copy of an old page (the clean-URL updates, translations, etc.).
+// Assets can be cached for a day.
+function staticHeaders(res, filePath) {
+  if (/\.html?$/i.test(filePath)) res.setHeader('Cache-Control', 'no-cache');
+  else res.setHeader('Cache-Control', 'public, max-age=86400');
+}
+
+app.use(express.static(ROOT, { setHeaders: staticHeaders }));
 
 // Serve "/page" as "/page.html" so the extension never appears in the URL.
 app.get('/:page', (req, res, next) => {
   const name = req.params.page;
   if (name === 'index') return res.redirect(301, '/' + queryString(req.originalUrl));
-  if (PAGES.includes(name)) return res.sendFile(path.join(ROOT, name + '.html'));
+  if (PAGES.includes(name)) {
+    res.setHeader('Cache-Control', 'no-cache');
+    return res.sendFile(path.join(ROOT, name + '.html'), { cacheControl: false });
+  }
   return next();
 });
 
