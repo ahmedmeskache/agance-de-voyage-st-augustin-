@@ -52,11 +52,11 @@
           <div style="padding:12px 16px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.15)">${esc(userName || 'Mon compte')}</div>
           <div style="display:flex;flex-direction:column">
             <a href="javascript:void(0)" onclick="openAccountSettings()" style="padding:10px 16px;color:#fff;text-decoration:none;font-size:13px">Mon compte / Modifier</a>
-            <a href="login.html" onclick="event.preventDefault();logoutClient();" style="padding:10px 16px;color:#fff;text-decoration:none;font-size:13px">Se déconnecter</a>
-            <a href="index.html" style="padding:10px 16px;color:#fff;text-decoration:none;font-size:13px">Retour à l'accueil</a>
+            <a href="login" onclick="event.preventDefault();logoutClient();" style="padding:10px 16px;color:#fff;text-decoration:none;font-size:13px">Se déconnecter</a>
+            <a href="index" style="padding:10px 16px;color:#fff;text-decoration:none;font-size:13px">Retour à l'accueil</a>
           </div></div>`;
       } else {
-        btn.innerHTML = `<a href="login.html" style="display:inline-block;background:#b8912f;color:#fff;text-decoration:none;padding:10px 18px;border-radius:30px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)">Se connecter / S'inscrire</a>`;
+        btn.innerHTML = `<a href="login" style="display:inline-block;background:#b8912f;color:#fff;text-decoration:none;padding:10px 18px;border-radius:30px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.25)">Se connecter / S'inscrire</a>`;
       }
     };
     render();
@@ -72,7 +72,7 @@
 
   // ---- account settings (change email / password) ----
   function openAccountSettings() {
-    if (!isAuthed()) { window.location.href = 'login.html'; return; }
+    if (!isAuthed()) { window.location.href = 'login'; return; }
     const old = document.getElementById('acctSettingsModal');
     if (old) old.remove();
     const m = document.createElement('div');
@@ -147,7 +147,7 @@
   function openReserve(offerName) {
     if (!isAuthed()) {
       localStorage.setItem('satv_redirect', window.location.href);
-      window.location.href = 'login.html';
+      window.location.href = 'login';
       return;
     }
     if (document.getElementById('resModal')) return;

@@ -52,7 +52,7 @@
     </form>
 
     <p class="hint">Les réservations et devis vous seront envoyés par email / téléphone.</p>
-    <div class="back"><a href="index.html">← Retour au site</a></div>
+    <div class="back"><a href="index">← Retour au site</a></div>
   </div>
 
 <script>
@@ -103,7 +103,7 @@
   function redirectAfterLogin(){
     const r = localStorage.getItem('satv_redirect');
     localStorage.removeItem('satv_redirect');
-    window.location.href = r || 'index.html';
+    window.location.href = r || 'index';
   }
 </script>
 </body>

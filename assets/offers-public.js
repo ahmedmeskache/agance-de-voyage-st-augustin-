@@ -230,7 +230,7 @@
         var b = card.querySelector('[data-book]');
         if (b) b.addEventListener('click', function () {
           if (window.openReserve) window.openReserve(b.getAttribute('data-book'));
-          else if (window.location) window.location.href = 'login.html';
+          else if (window.location) window.location.href = 'login';
         });
         var db = card.querySelector('.offer-detail-btn');
         if (db) db.addEventListener('click', function () {

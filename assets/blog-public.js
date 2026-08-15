@@ -52,7 +52,7 @@
           '<h3>' + esc(t.title) + '</h3>' +
           (t.excerpt ? '<p class="offer-details">' + esc(truncate(t.excerpt, 140)) + '</p>' : '') +
           '<div class="card-actions">' +
-            '<a class="card-link blog-open-btn" href="blog-post.html?id=' + esc(p.id) + '" data-post-id="' + esc(p.id) + '">' + esc(lbl('blog_read')) + '</a>' +
+            '<a class="card-link blog-open-btn" href="blog-post?id=' + esc(p.id) + '" data-post-id="' + esc(p.id) + '">' + esc(lbl('blog_read')) + '</a>' +
           '</div>' +
         '</div>' +
       '</div>'

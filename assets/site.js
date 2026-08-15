@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.js-year').forEach(el=> el.textContent = new Date().getFullYear());
 
   /* ---------- mark active nav link based on current page ---------- */
-  const current = window.location.pathname.split('/').pop() || 'index.html';
+  const current = window.location.pathname.split('/').pop() || 'index';
   document.querySelectorAll('nav a[href]').forEach(a=>{
     const href = a.getAttribute('href');
     if (href === current){
@@ -778,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function(){
   window.openBook = function(item, sub){
     if (!localStorage.getItem('satv_token')) {
       try { localStorage.setItem('satv_redirect', window.location.href); } catch(e){}
-      window.location.href = 'login.html';
+      window.location.href = 'login';
       return;
     }
     lastBookItem = item; lastBookSub = sub;
