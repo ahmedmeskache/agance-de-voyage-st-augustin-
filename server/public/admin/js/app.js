@@ -36,7 +36,6 @@ if (API.token) {
   try { const p = JSON.parse(atob((API.token || '').split('.')[1] + '==')); __currentUserId = p.id; if (p.role) __currentRole = p.role; } catch (_) {}
   $('#adminName').textContent = __currentRole.charAt(0).toUpperCase() + __currentRole.slice(1);
   applyRoleRestrictions();
-  route();
   loadDashboard();
   // fetch the real user (name/role) so the sidebar is correct after a refresh
   API.get('/auth/me').then(d => {
