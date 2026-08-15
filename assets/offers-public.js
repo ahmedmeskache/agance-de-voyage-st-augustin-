@@ -76,6 +76,30 @@
     );
   }
 
+  // Auto-extract short keyword "tag pills" from the description text.
+  function autoTags(text) {
+    if (!text) return [];
+    var STOP = new Set([
+      'de','du','des','la','le','les','et','ou','une','un','avec','pour','sur','dans','au','aux','en','à','a',
+      'the','a','an','and','or','of','with','for','in','on','at','to','by','from',
+      'al','el','la','le','los','las','un','una','con','para','en','por','y','del','ال','من','في','على','و','عن','مع','إلى','أن','هذا','هذه','ب','ك','ل'
+    ]);
+    var raw = String(text)
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .map(function (w) { return w.trim(); })
+      .filter(function (w) { return w.length >= 3 && !STOP.has(w.toLowerCase()); });
+    // Count occurrences, keep the most frequent unique words (max 6).
+    var counts = {};
+    raw.forEach(function (w) { var k = w.toLowerCase(); counts[k] = (counts[k] || 0) + 1; });
+    var uniq = [];
+    Object.keys(counts).forEach(function (k) {
+      if (uniq.indexOf(k) === -1) uniq.push(k);
+    });
+    uniq.sort(function (a, b) { return counts[b] - counts[a]; });
+    return uniq.slice(0, 6);
+  }
+
   function offerDetailModal(card) {
     const old = document.getElementById('offerDetailModal');
     if (old) old.remove();
@@ -105,6 +129,10 @@
       ? '<div class="detail-hero"><img src="' + esc(img) + '" alt="' + esc(name) + '"></div>'
       : '';
 
+    const tagsHTML = autoTags(details).length
+      ? '<div class="tag-row offer-detail-tags">' + autoTags(details).map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('') + '</div>'
+      : '';
+
     const body = document.createElement('div');
     body.className = 'detail-content';
     body.innerHTML =
@@ -113,6 +141,7 @@
       '<h3 class="detail-title">' + esc(name) + '</h3>' +
       chipsHTML +
       (details ? '<p class="detail-text">' + esc(details) + '</p>' : '') +
+      tagsHTML +
       (program ? '<h4 class="detail-sec">' + esc(lbl('program_title')) + '</h4><div class="detail-program"><div class="detail-step"><div class="step-body"><span>' + esc(program) + '</span></div></div></div>' : '') +
       '<div class="detail-actions"><button type="button" class="btn reserve-btn" data-book="' + esc(name) + '">' + esc(lbl('btn_reserve')) + '</button></div>';
 

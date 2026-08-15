@@ -982,8 +982,10 @@ body[dir="rtl"] #offerProgramModal h3, body[dir="rtl"] #blogArticleModal h3{font
 .offer-detail-overlay .detail-content .detail-info,
 .offer-detail-overlay .detail-content .detail-sec,
 .offer-detail-overlay .detail-content .detail-program,
-.offer-detail-overlay .detail-content .detail-actions{margin-left:28px;margin-right:28px;}
+.offer-detail-overlay .detail-content .detail-actions,
+.offer-detail-overlay .detail-content .offer-detail-tags{margin-left:28px;margin-right:28px;}
 .offer-detail-overlay .detail-content .detail-hero{margin-left:0;margin-right:0;border-radius:14px 14px 0 0;}
+.offer-detail-overlay .detail-content .offer-detail-tags{margin-top:0;margin-bottom:18px;}
 .offer-detail-overlay .offer-modal-close{position:absolute;top:14px;right:14px;z-index:5;width:34px;height:34px;border:none;
   background:rgba(255,255,255,.92);color:#333;font-size:22px;line-height:1;border-radius:50%;cursor:pointer;
   box-shadow:0 2px 8px rgba(0,0,0,.25);}
