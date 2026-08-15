@@ -727,7 +727,9 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
         <span class="muted" style="font-size:12px">Pré-remplit un article type prêt à personnaliser.</span>
       </div>
       <div class="form-field full"><label>Titre</label><input id="p_title" value="${esc(edit?.title || '')}"></div>
-      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualité."></div>
+      <div class="form-field"><label>Catégorie (Français)</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualité."></div>
+      <div class="form-field"><label>Catégorie (English)</label><input id="p_category_en" value="${esc(edit?.category_en || '')}" placeholder="Ex : Guide, News."></div>
+      <div class="form-field"><label>Catégorie (العربية)</label><input id="p_category_ar" value="${esc(edit?.category_ar || '')}" placeholder="مثال: دليل، أخبار"></div>
       <div class="form-field"><label>Tags (séparés par des virgules)</label><input id="p_tags" value="${esc(edit?.tags || '')}" placeholder="Ex : UNESCO, Culture, Festival"></div>
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait (accroche)</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
@@ -765,6 +767,8 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
     const fd = new FormData();
     fd.append('title', $('#p_title').value);
     fd.append('category', $('#p_category').value);
+    fd.append('category_en', $('#p_category_en').value);
+    fd.append('category_ar', $('#p_category_ar').value);
     fd.append('tags', $('#p_tags').value);
     fd.append('excerpt', $('#p_excerpt').value);
     fd.append('content', $('#p_content').value);

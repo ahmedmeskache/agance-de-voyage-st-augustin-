@@ -151,6 +151,7 @@ async function backfillTranslations() {
     for (const p of posts) {
       const fields = [];
       if (needsTranslation(p.title, p.title_en)) fields.push({ key: 'title', value: p.title });
+      if (needsTranslation(p.category, p.category_en)) fields.push({ key: 'category', value: p.category });
       if (needsTranslation(p.excerpt, p.excerpt_en)) fields.push({ key: 'excerpt', value: p.excerpt });
       if (needsTranslation(p.content, p.content_en)) fields.push({ key: 'content', value: p.content });
       if (!fields.length) continue;

@@ -202,7 +202,7 @@
     var meta = document.getElementById('postMeta');
     var dateTxt = post.created_at ? new Date(post.created_at).toLocaleDateString(L==='ar'?'ar-DZ':(L==='en'?'en-GB':'fr-FR'), {day:'2-digit',month:'long',year:'numeric'}) : '';
     meta.innerHTML =
-      (post.category ? '<span>🗂️ '+esc(post.category)+'</span>' : '') +
+      (pick(post.category, post.category_en, post.category_ar) ? '<span>🗂️ '+esc(pick(post.category, post.category_en, post.category_ar))+'</span>' : '') +
       (dateTxt ? '<span>'+esc(Lbl.meta_date||'🗓️')+' '+esc(dateTxt)+'</span>' : '') +
       '<span>'+esc(Lbl.author||'')+'</span>';
     var content = document.getElementById('postContent');

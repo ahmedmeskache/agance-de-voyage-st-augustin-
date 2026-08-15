@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS posts (
   excerpt     TEXT,
   content     TEXT,
   image       TEXT,
+  category_en  TEXT,
+  category_ar  TEXT,
   title_en    TEXT,
   title_ar    TEXT,
   excerpt_en  TEXT,
@@ -130,6 +132,12 @@ if (!postCols.includes('tags')) {
   db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT;`);
 }
 // Blog per-language text (auto-translated from French at save time)
+if (!postCols.includes('category_en')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN category_en TEXT;`);
+}
+if (!postCols.includes('category_ar')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN category_ar TEXT;`);
+}
 if (!postCols.includes('title_en')) {
   db.exec(`ALTER TABLE posts ADD COLUMN title_en TEXT;`);
 }

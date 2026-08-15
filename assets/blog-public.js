@@ -32,16 +32,16 @@
   function cardHTML(p) {
     const lang = (window.currentLang || 'fr');
     const texts = {
-      fr: { title: p.title, excerpt: p.excerpt },
-      en: { title: p.title_en || p.title, excerpt: p.excerpt_en || p.excerpt },
-      ar: { title: p.title_ar || p.title, excerpt: p.excerpt_ar || p.excerpt },
+      fr: { title: p.title, category: p.category, excerpt: p.excerpt },
+      en: { title: p.title_en || p.title, category: p.category_en || p.category, excerpt: p.excerpt_en || p.excerpt },
+      ar: { title: p.title_ar || p.title, category: p.category_ar || p.category, excerpt: p.excerpt_ar || p.excerpt },
     };
     const t = texts[lang] || texts.fr;
     const img = p.image
       ? '<div class="card-media"><img src="' + esc(p.image) + '" alt="' + esc(t.title) + '" loading="lazy"></div>'
       : '<div class="card-media icon-media"><span class="icon-glyph">📰</span></div>';
-    const meta = p.category
-      ? '<div class="card-meta"><span>🗓️ ' + esc(p.category) + '</span></div>'
+    const meta = t.category
+      ? '<div class="card-meta"><span class="blog-cat">' + esc(t.category) + '</span></div>'
       : '';
     const content = JSON.stringify(texts).replace(/"/g, '&quot;');
     return (
@@ -67,6 +67,8 @@
       const t = texts[lang] || texts.fr;
       var h3 = card.querySelector('h3');
       if (h3) h3.textContent = t.title || '';
+      var cat = card.querySelector('.blog-cat');
+      if (cat) cat.textContent = t.category || '';
       var det = card.querySelector('.offer-details');
       if (det) det.textContent = truncate(t.excerpt || '', 140);
       var link = card.querySelector('.blog-open-btn');

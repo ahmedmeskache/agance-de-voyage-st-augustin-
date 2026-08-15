@@ -32,6 +32,7 @@ const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
 async function buildTranslations(fr, overrides = {}) {
   const fields = [];
   if (fr.title) fields.push({ key: 'title', value: fr.title });
+  if (fr.category) fields.push({ key: 'category', value: fr.category });
   if (fr.excerpt) fields.push({ key: 'excerpt', value: fr.excerpt });
   if (fr.content) fields.push({ key: 'content', value: fr.content });
   if (!fields.length) return {};
@@ -69,15 +70,16 @@ router.get('/:id', (req, res) => {
 
 // Admin create
 router.post('/', contentRequired, upload.single('image'), async (req, res) => {
-  const { title, category, excerpt, content, image_url, tags, active, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar } = req.body || {};
+  const { title, category, excerpt, content, image_url, tags, active, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar, category_en, category_ar } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Le titre est requis.' });
   const image = req.file ? `/uploads/${req.file.filename}` : (image_url || null);
-  const tr = await buildTranslations({ title, excerpt, content }, req.body);
+  const tr = await buildTranslations({ title, category, excerpt, content }, req.body);
   const info = db.prepare(
-    `INSERT INTO posts (title, category, excerpt, content, image, tags, active, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO posts (title, category, excerpt, content, image, tags, active, category_en, category_ar, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(
     title, category || null, excerpt || null, content || null, image, tags || null, parseActive(active),
+    tr.category_en || category_en || null, tr.category_ar || category_ar || null,
     tr.title_en || null, tr.title_ar || null,
     tr.excerpt_en || null, tr.excerpt_ar || null,
     tr.content_en || null, tr.content_ar || null
@@ -94,18 +96,21 @@ router.put('/:id', contentRequired, upload.single('image'), async (req, res) => 
   const title = b.title !== undefined ? b.title : post.title;
   const excerpt = b.excerpt !== undefined ? b.excerpt : post.excerpt;
   const content = b.content !== undefined ? b.content : post.content;
-  const tr = await buildTranslations({ title, excerpt, content }, b);
+  const category = b.category !== undefined ? b.category : post.category;
+  const tr = await buildTranslations({ title, category, excerpt, content }, b);
   db.prepare(
     `UPDATE posts SET title=?, category=?, excerpt=?, content=?, image=?, tags=?, active=?,
-       title_en=?, title_ar=?, excerpt_en=?, excerpt_ar=?, content_en=?, content_ar=? WHERE id=?`
+       category_en=?, category_ar=?, title_en=?, title_ar=?, excerpt_en=?, excerpt_ar=?, content_en=?, content_ar=? WHERE id=?`
   ).run(
     title,
-    b.category !== undefined ? b.category : post.category,
+    category,
     excerpt,
     content,
     image,
     b.tags !== undefined ? b.tags : post.tags,
     b.active !== undefined ? parseActive(b.active) : post.active,
+    tr.category_en || post.category_en || null,
+    tr.category_ar || post.category_ar || null,
     tr.title_en || post.title_en || null,
     tr.title_ar || post.title_ar || null,
     tr.excerpt_en || post.excerpt_en || null,

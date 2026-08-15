@@ -41,6 +41,7 @@ async function retranslateRow(table, fields, id, force = false) {
 
 const POST_FIELDS = [
   { name: 'title' },
+  { name: 'category' },
   { name: 'excerpt' },
   { name: 'content' },
 ];
