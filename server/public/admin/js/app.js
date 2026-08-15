@@ -391,6 +391,22 @@ function openOfferForm(id) {
   $type.addEventListener('change', syncPageOptions);
   syncPageOptions();
 
+  // Live preview of the chosen image file, at the same size as the static cards.
+  ['f_image_file', 'f_image_en_file', 'f_image_ar_file'].forEach(id => {
+    $(`#${id}`).addEventListener('change', () => {
+      const file = $(`#${id}`).files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      let prev = $(`#${id}`).parentElement.querySelector('.img-preview');
+      if (!prev) {
+        prev = document.createElement('img');
+        prev.className = 'img-preview';
+        $(`#${id}`).parentElement.appendChild(prev);
+      }
+      prev.src = url;
+    });
+  });
+
   $('#saveOfferBtn').addEventListener('click', async () => {
     const fd = new FormData();
     fd.append('type', $('#f_type').value);
