@@ -329,7 +329,8 @@ function openOfferForm(id) {
         <input id="f_image_ar_file" type="file" accept="image/*">
         ${edit && edit.image_ar ? `<img class="img-preview" src="${esc(edit.image_ar)}">` : ''}</div>
       <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
-      <div class="form-field full"><label>Traduction — Nom (Anglais) <span class="muted" style="font-size:11px">(laisser vide pour auto-traduction)</span></label><input id="f_name_en" value="${esc(edit?.name_en || '')}"></div>
+      <div class="form-field full" style="grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;margin-top:6px"><label style="font-size:13px;text-transform:uppercase;letter-spacing:.5px">🌐 Traductions — Anglais / Arabe</label><span class="muted" style="font-size:12px">Écrivez ici les traductions manuelles. Ce que vous tapez est utilisé tel quel (rien n'est écrasé).</span></div>
+      <div class="form-field full"><label>Traduction — Nom (Anglais)</label><input id="f_name_en" value="${esc(edit?.name_en || '')}"></div>
       <div class="form-field full"><label>Traduction — Nom (Arabe)</label><input id="f_name_ar" value="${esc(edit?.name_ar || '')}"></div>
       <div class="form-field full"><label>Traduction — Détails (Anglais)</label><textarea id="f_details_en">${esc(edit?.details_en || '')}</textarea></div>
       <div class="form-field full"><label>Traduction — Détails (Arabe)</label><textarea id="f_details_ar">${esc(edit?.details_ar || '')}</textarea></div>
@@ -731,7 +732,8 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait (accroche)</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
-      <div class="form-field full"><label>Traduction — Titre (Anglais) <span class="muted" style="font-size:11px">(laisser vide pour auto-traduction)</span></label><input id="p_title_en" value="${esc(edit?.title_en || '')}"></div>
+      <div class="form-field full" style="grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;margin-top:6px"><label style="font-size:13px;text-transform:uppercase;letter-spacing:.5px">🌐 Traductions — Anglais / Arabe</label><span class="muted" style="font-size:12px">Écrivez ici les traductions manuelles. Ce que vous tapez est utilisé tel quel (rien n'est écrasé).</span></div>
+      <div class="form-field full"><label>Traduction — Titre (Anglais)</label><input id="p_title_en" value="${esc(edit?.title_en || '')}"></div>
       <div class="form-field full"><label>Traduction — Titre (Arabe)</label><input id="p_title_ar" value="${esc(edit?.title_ar || '')}"></div>
       <div class="form-field full"><label>Traduction — Extrait (Anglais)</label><textarea id="p_excerpt_en">${esc(edit?.excerpt_en || '')}</textarea></div>
       <div class="form-field full"><label>Traduction — Extrait (Arabe)</label><textarea id="p_excerpt_ar">${esc(edit?.excerpt_ar || '')}</textarea></div>
