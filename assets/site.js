@@ -133,7 +133,7 @@ const siteTranslations = {
     quiz_match:"التوافق:", quiz_recommended:"الوجهة الموصى بها",
     quiz_result_title:"أفضل الوجهات لك", quiz_detail:"عرض التفاصيل", quiz_book:"احجز",
     quiz_title:"اعثر على وجهتك المثالية", quiz_back:"→ السابق", quiz_restart:"إعادة ↺", quiz_progress:"السؤال",
-    blog_read:"اقرأ المقال ←"
+    blog_read:"اقرأ المزيد ←"
   }
 };
 
