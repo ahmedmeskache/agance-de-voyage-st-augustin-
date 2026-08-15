@@ -248,10 +248,32 @@ async function deleteOffer(id) {
   await loadOffers();
 }
 
+function parseProgramSteps(text) {
+  const blocks = String(text || '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  return blocks.map(block => {
+    const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+    const first = lines.shift() || '';
+    let label = '', title = first;
+    const sep = first.indexOf(' · ');
+    if (sep > -1) { label = first.slice(0, sep).trim(); title = first.slice(sep + 3).trim(); }
+    return { label, title, desc: lines.join('\n') };
+  });
+}
+function serializeProgramSteps(steps) {
+  return steps.map(s => {
+    const head = s.label ? `${s.label} · ${s.title}` : s.title;
+    return (head + (s.desc ? '\n' + s.desc : '')).trim();
+  }).filter(Boolean).join('\n\n');
+}
+
 function openOfferForm(id) {
   const edit = id ? offersCache.find(o => o.id === id) : null;
   const body = `
     <div class="form-grid">
+      <div class="form-field full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button type="button" class="btn-sm gray" id="loadOfferTemplateBtn">Charger un mod�le (Cirta)</button>
+        <span class="muted" style="font-size:12px">Remplit le formulaire avec un exemple pr�t � personnaliser.</span>
+      </div>
       <div class="form-field">
         <label>Type</label>
         <select id="f_type">
@@ -260,37 +282,91 @@ function openOfferForm(id) {
         </select>
       </div>
       <div class="form-field">
-        <label>Page / catégorie (où afficher)</label>
+        <label>Page / cat�gorie (o� afficher)</label>
         <select id="f_page">
-          <option value="local" data-page-for="circuit">Circuit Local (Algérie)</option>
+          <option value="local" data-page-for="circuit">Circuit Local (Alg�rie)</option>
           <option value="international" data-page-for="circuit">Circuit International</option>
           <option value="omra" data-page-for="circuit">Omra</option>
-          <option value="etranger" data-page-for="circuit">Étrangers (Découverte de l'Afrique du Nord)</option>
-          <option value="excursions" data-page-for="excursion">Excursions intérieur</option>
+          <option value="etranger" data-page-for="circuit">�trangers (D�couverte de l'Afrique du Nord)</option>
+          <option value="excursions" data-page-for="excursion">Excursions int�rieur</option>
         </select>
       </div>
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
-      <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel…"></div>
+      <div class="form-field"><label>Type / cat�gorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel."></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
-      <div class="form-field full"><label>Image — Français</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL (ou choisir un fichier)">
+      <div class="form-field full"><label>Image - Fran�ais</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_file" type="file" accept="image/*">
         ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}</div>
-      <div class="form-field full"><label>Image — English</label><input id="f_image_en_url" value="${esc(edit?.image_en || '')}" placeholder="URL (ou choisir un fichier)">
+      <div class="form-field full"><label>Image - English</label><input id="f_image_en_url" value="${esc(edit?.image_en || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_en_file" type="file" accept="image/*">
         ${edit && edit.image_en ? `<img class="img-preview" src="${esc(edit.image_en)}">` : ''}</div>
-      <div class="form-field full"><label>Image — العربية</label><input id="f_image_ar_url" value="${esc(edit?.image_ar || '')}" placeholder="URL (ou choisir un fichier)">
+      <div class="form-field full"><label>Image - ???????</label><input id="f_image_ar_url" value="${esc(edit?.image_ar || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_ar_file" type="file" accept="image/*">
         ${edit && edit.image_ar ? `<img class="img-preview" src="${esc(edit.image_ar)}">` : ''}</div>
-      <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
-      <div class="form-field full"><label>Programme</label><textarea id="f_program" style="min-height:150px" placeholder="Jour 1 : …, Jour 2 : …">${esc(edit?.program || '')}</textarea></div>
-      <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
-      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiée</label></div>
+      <div class="form-field full"><label>D�tails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
+      <div class="form-field full">
+        <label>Programme (�tapes)</label>
+        <div id="f_program_steps"></div>
+        <button type="button" class="btn-sm gray" id="addProgStepBtn" style="margin-top:8px">+ Ajouter une �tape</button>
+      </div>
+      <div class="form-field"><label>Dur�e</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
+      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publi�e</label></div>
     </div>
+    <input type="hidden" id="f_program" value="${esc(edit?.program || '')}">
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
       <button class="btn-primary" id="saveOfferBtn">Enregistrer</button>
     </div>`;
   openModal(edit ? 'Modifier l\'offre' : 'Nouvelle offre', body);
+
+  // Structured program steps editor.
+  const stepsWrap = $('#f_program_steps');
+  function renderSteps(steps) {
+    stepsWrap.innerHTML = steps.map((s, i) => `
+      <div class="prog-step" data-idx="${i}" style="display:grid;grid-template-columns:140px 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:start">
+        <input class="ps-label" placeholder="Jour 1" value="${esc(s.label)}">
+        <input class="ps-title" placeholder="Titre de l'�tape" value="${esc(s.title)}">
+        <textarea class="ps-desc" rows="2" placeholder="Description...">${esc(s.desc)}</textarea>
+        <button type="button" class="btn-sm red ps-del" data-idx="${i}">�</button>
+      </div>`).join('') || '<p class="muted" style="margin:0">Aucune �tape. Cliquez sur &#171; + Ajouter une �tape &#187;.</p>';
+    stepsWrap.querySelectorAll('.ps-del').forEach(b => b.addEventListener('click', () => {
+      const steps = getSteps();
+      steps.splice(+b.dataset.idx, 1);
+      renderSteps(steps);
+      syncHidden();
+    }));
+  }
+  function getSteps() {
+    return Array.from(stepsWrap.querySelectorAll('.prog-step')).map(r => ({
+      label: r.querySelector('.ps-label').value,
+      title: r.querySelector('.ps-title').value,
+      desc: r.querySelector('.ps-desc').value,
+    }));
+  }
+  function syncHidden() { $('#f_program').value = serializeProgramSteps(getSteps()); }
+  stepsWrap.addEventListener('input', syncHidden);
+  renderSteps(parseProgramSteps(edit?.program));
+  $('#addProgStepBtn').addEventListener('click', () => {
+    const steps = getSteps();
+    steps.push({ label: 'Jour ' + (steps.length + 1), title: '', desc: '' });
+    renderSteps(steps);
+  });
+
+  // Ready-to-use template mirroring the static Cirta card.
+  $('#loadOfferTemplateBtn').addEventListener('click', () => {
+    $('#f_type').value = 'circuit';
+    $('#f_name').value = 'Nom du circuit (ex : Cirta - Constantine)';
+    $('#f_category').value = 'Culturel / Patrimoine';
+    $('#f_price').value = '';
+    $('#f_duration').value = '3 jours / 2 nuits';
+    $('#f_details').value = 'Programme touristique de 3 jours / 2 nuits : visites historiques, patrimoine et paysages spectaculaires. Accompagn� et sur demande.';
+    renderSteps([
+      { label: 'Jour 1', title: 'Arriv�e et d�couverte', desc: 'Installation puis premi�re visite : panoramas et principaux monuments de la ville.' },
+      { label: 'Jour 2', title: 'Patrimoine et culture', desc: 'Visites guid�es des sites historiques, mus�es et march�s locaux.' },
+      { label: 'Jour 3', title: 'D�part', desc: 'Derni�re visite, pause souvenir, puis retour. Fin du circuit.' },
+    ]);
+    syncPageOptions();
+  });
 
   // Show only the page options matching the selected type (circuit/excursion).
   const $type = $('#f_type');
@@ -562,15 +638,20 @@ async function deletePost(id) {
 }
 
 function openPostForm(id) {
-  const edit = id ? postsCache.find(p => p.id === id) : null;
+const edit = id ? postsCache.find(p => p.id === id) : null;
   const body = `
     <div class="form-grid">
+      <div class="form-field full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button type="button" class="btn-sm gray" id="loadPostTemplateBtn">Charger un mod�le (article)</button>
+        <span class="muted" style="font-size:12px">Pr�-remplit un article type pr�t � personnaliser.</span>
+      </div>
       <div class="form-field full"><label>Titre</label><input id="p_title" value="${esc(edit?.title || '')}"></div>
-      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualité…"></div>
+      <div class="form-field"><label>Cat�gorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualit�."></div>
+      <div class="form-field"><label>Tags (s�par�s par des virgules)</label><input id="p_tags" value="${esc(edit?.tags || '')}" placeholder="Ex : UNESCO, Culture, Festival"></div>
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
-      <div class="form-field full"><label>Extrait</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
+      <div class="form-field full"><label>Extrait (accroche)</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
-      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publié</label></div>
+      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publi�</label></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
@@ -578,10 +659,25 @@ function openPostForm(id) {
     </div>`;
   openModal(edit ? 'Modifier l\'article' : 'Nouvel article', body);
 
+  $('#loadPostTemplateBtn').addEventListener('click', () => {
+    $('#p_category').value = 'Culture & Patrimoine';
+    $('#p_tags').value = 'UNESCO, Alg�rie, D�couverte';
+    $('#p_excerpt').value = 'D�couvrez ce lieu exceptionnel : histoire mill�naire, paysages spectaculaires et traditions vivantes vous attendent.';
+    $('#p_content').value = [
+      'Un voyage au coeur de l\'histoire',
+      'De ce haut lieu, chaque pierre raconte une histoire. Class�/reconnu pour son patrimoine, il fascine par son atmosph�re unique et ses panoramas remarquables.',
+      'Les temps forts de la visite',
+      'Parcourez les principaux sites, rencontrez les habitants et laissez-vous guider par nos accompagnateurs passionn�s.',
+      'Pourquoi y aller avec S.A.T.V.',
+      'Transport, guide et logistique pris en charge : vivez l\'exp�rience en toute s�r�nit�, � votre rythme.'
+    ].join('\n\n');
+  });
+
   $('#savePostBtn').addEventListener('click', async () => {
     const fd = new FormData();
     fd.append('title', $('#p_title').value);
     fd.append('category', $('#p_category').value);
+    fd.append('tags', $('#p_tags').value);
     fd.append('excerpt', $('#p_excerpt').value);
     fd.append('content', $('#p_content').value);
     fd.append('active', $('#p_active').checked ? '1' : '0');

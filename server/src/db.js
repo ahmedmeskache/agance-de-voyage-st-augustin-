@@ -42,6 +42,12 @@ if (!offersCols.includes('program_ar')) {
   db.exec(`ALTER TABLE offers ADD COLUMN program_ar TEXT;`);
 }
 
+// Blog tags (comma-separated) for tag pills on the article page.
+const postCols = db.prepare(`PRAGMA table_info(posts)`).all().map(c => c.name);
+if (!postCols.includes('tags')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT;`);
+}
+
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -163,6 +163,9 @@ code{background:#eee7d7;padding:1px 6px;border-radius:4px;font-size:12px}
 .modal-body{padding:22px}
 #modalBody{padding:22px}
 .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.prog-step .ps-label,.prog-step .ps-title,.prog-step .ps-desc{padding:9px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;font-family:inherit;background:#fdfcf8}
+.prog-step .ps-desc{resize:vertical;min-height:56px}
+.prog-step .ps-del{align-self:center}
 
 @media(max-width:820px){
   .sidebar{flex-basis:auto;width:64px;flex:0 0 64px}

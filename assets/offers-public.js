@@ -133,6 +133,31 @@
       ? '<div class="tag-row offer-detail-tags">' + autoTags(details).map(function (t) { return '<span class="tag-pill">' + esc(t) + '</span>'; }).join('') + '</div>'
       : '';
 
+    // Structured program: render each step (blank-line separated) as its own block.
+    const steps = String(program || '')
+      .split(/\n\s*\n/)
+      .map(function (b) { return b.trim(); })
+      .filter(Boolean)
+      .map(function (b) {
+        var lines = b.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+        var first = lines.shift() || '';
+        var label = '', title = first;
+        var sep = first.indexOf(' · ');
+        if (sep > -1) { label = first.slice(0, sep).trim(); title = first.slice(sep + 3).trim(); }
+        return { label: label, title: title, desc: lines.join('<br>') };
+      });
+    const programHTML = steps.length
+      ? '<h4 class="detail-sec">' + esc(lbl('program_title')) + '</h4><div class="detail-program">' +
+        steps.map(function (s) {
+          return '<div class="detail-step">' +
+            (s.label ? '<div class="step-time">' + esc(s.label) + '</div>' : '') +
+            '<div class="step-body"><strong>' + esc(s.title) + '</strong>' +
+            (s.desc ? '<span>' + s.desc + '</span>' : '') +
+            '</div></div>';
+        }).join('') +
+        '</div>'
+      : '';
+
     const body = document.createElement('div');
     body.className = 'detail-content';
     body.innerHTML =
@@ -142,7 +167,7 @@
       chipsHTML +
       (details ? '<p class="detail-text">' + esc(details) + '</p>' : '') +
       tagsHTML +
-      (program ? '<h4 class="detail-sec">' + esc(lbl('program_title')) + '</h4><div class="detail-program"><div class="detail-step"><div class="step-body"><span>' + esc(program) + '</span></div></div></div>' : '') +
+      programHTML +
       '<div class="detail-actions"><button type="button" class="btn reserve-btn" data-book="' + esc(name) + '">' + esc(lbl('btn_reserve')) + '</button></div>';
 
     const overlay = document.createElement('div');
