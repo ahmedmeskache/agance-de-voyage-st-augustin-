@@ -44,7 +44,7 @@ if (API.token) {
     __currentRole = u.role || __currentRole;
     if (u.name) $('#adminName').textContent = u.name.charAt(0).toUpperCase() + u.name.slice(1);
     const roleLabel = __currentRole === 'admin' ? 'Administrateur' : (__currentRole === 'manager' ? 'Manager' : 'Utilisateur');
-    $('#adminRole').textContent = 'ðŸ‘¤ ' + roleLabel;
+    $('#adminRole').textContent = '👤 ' + roleLabel;
     applyRoleRestrictions();
   }).catch(() => {});
 } else {
@@ -78,7 +78,7 @@ $('#loginForm').addEventListener('submit', async (e) => {
     __currentRole = data.user.role;
     $('#adminName').textContent = (data.user.name || __currentRole).charAt(0).toUpperCase() + (data.user.name || __currentRole).slice(1);
     const roleLabel = __currentRole === 'admin' ? 'Administrateur' : (__currentRole === 'manager' ? 'Manager' : 'Utilisateur');
-    $('#adminRole').textContent = 'ðŸ‘¤ ' + roleLabel;
+    $('#adminRole').textContent = '👤 ' + roleLabel;
     errBox.classList.add('hidden');
     showApp();
     applyRoleRestrictions();
@@ -116,7 +116,7 @@ $('#changePwBtn').addEventListener('click', () => {
     try {
       await API.post('/auth/change-password', { current_password: cur, new_password: nw });
       closeModal();
-      alert('Mot de passe modifié âœ“ Connectez-vous à nouveau.');
+      alert('Mot de passe modifié ✓ Connectez-vous à nouveau.');
       API.token = null;
       showLogin();
     } catch (err) {
@@ -150,7 +150,7 @@ $('#changeNameBtn').addEventListener('click', async () => {
       await API.put('/auth/me', payload);
       closeModal();
       $('#adminName').textContent = payload.name.charAt(0).toUpperCase() + payload.name.slice(1);
-      alert('Nom d\'utilisateur mis à jour âœ“');
+      alert('Nom d\'utilisateur mis à jour ✓');
     } catch (err) {
       alert(err.message);
     }
@@ -238,7 +238,7 @@ function renderOffers() {
           <button class="btn-sm red" onclick="deleteOffer(${o.id})">Supprimer</button>
         </div>
       </div>`).join('')
-    : '<p class="muted">Aucune offre. Cliquez sur Â« + Nouvelle offre Â».</p>';
+    : '<p class="muted">Aucune offre. Cliquez sur « + Nouvelle offre ».</p>';
 }
 
 $$('#view-offers .tab-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -282,13 +282,13 @@ function openOfferForm(id) {
         </select>
       </div>
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
-      <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturelâ€¦"></div>
+      <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel…"></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
       <div class="form-field full"><label>Image</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL de l'image (ou choisir un fichier)">
         <input id="f_image_file" type="file" accept="image/*"></div>
       ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}
       <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
-      <div class="form-field full"><label>Programme</label><textarea id="f_program" style="min-height:150px" placeholder="Jour 1 : â€¦, Jour 2 : â€¦">${esc(edit?.program || '')}</textarea></div>
+      <div class="form-field full"><label>Programme</label><textarea id="f_program" style="min-height:150px" placeholder="Jour 1 : …, Jour 2 : …">${esc(edit?.program || '')}</textarea></div>
       <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
       <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiée</label></div>
     </div>
@@ -361,15 +361,15 @@ function renderReservations(list) {
     <div class="res-item">
       <div class="res-info">
         <h4>${esc(r.offer_name)} <span class="status-pill ${esc(r.status)}">${esc(r.status)}</span></h4>
-        <div class="muted">${esc(r.type || '')}${r.travel_date ? ' Â· ' + esc(r.travel_date) : ''}${r.people ? ' Â· ' + r.people + ' pers.' : ''}</div>
+        <div class="muted">${esc(r.type || '')}${r.travel_date ? ' · ' + esc(r.travel_date) : ''}${r.people ? ' · ' + r.people + ' pers.' : ''}</div>
         <div class="res-detail">
-          <strong>${esc(r.contact_name || '')}</strong>${r.contact_email ? ' Â· ' + esc(r.contact_email) : ''}${r.contact_phone ? ' Â· ' + esc(r.contact_phone) : ''}
-          ${r.message ? '<br>Â« ' + esc(r.message) + ' Â»' : ''}
+          <strong>${esc(r.contact_name || '')}</strong>${r.contact_email ? ' · ' + esc(r.contact_email) : ''}${r.contact_phone ? ' · ' + esc(r.contact_phone) : ''}
+          ${r.message ? '<br>« ' + esc(r.message) + ' »' : ''}
           <br>Créée le ${fmtDate(r.created_at)}
         </div>
       </div>
       <div class="res-actions">
-        <button class="btn-sm green" onclick="setResStatus(${r.id},'confirmed')">âœ” Confirmer</button>
+        <button class="btn-sm green" onclick="setResStatus(${r.id},'confirmed')">✔ Confirmer</button>
         <button class="btn-sm ${r.status === 'pending' ? 'gray' : (r.type ? 'green' : '')}"  onclick="setResStatus(${r.id},'pending')">Remettre en attente</button>
         <button class="btn-sm red" onclick="setResStatus(${r.id},'cancelled')">Annuler</button>
         <button class="btn-sm gray" onclick="deleteReservation(${r.id})">Suppr.</button>
@@ -420,8 +420,8 @@ function renderUsers() {
             ${u.provider && u.provider !== 'email' ? `<span class="badge inactive">${esc(u.provider)}</span>` : ''}
           </div>
           <h4>${esc(u.name)} ${u.id === __currentUserId ? '<span class="badge inactive">vous</span>' : ''}</h4>
-          <div class="muted">${esc(u.email || 'â€”')}${u.phone ? ' Â· ' + esc(u.phone) : ''}</div>
-          <div class="muted">Inscrit le ${fmtDate(u.created_at)} Â· ${u.reservations_count || 0} réservation(s)</div>
+          <div class="muted">${esc(u.email || '—')}${u.phone ? ' · ' + esc(u.phone) : ''}</div>
+          <div class="muted">Inscrit le ${fmtDate(u.created_at)} · ${u.reservations_count || 0} réservation(s)</div>
         </div>
         <div class="oc-actions">
           <button class="btn-sm" onclick="openUserForm(${u.id})">Modifier</button>
@@ -492,7 +492,7 @@ function openUserPassword(id) {
     try {
       await API.put(`/admin/users/${id}/password`, { password: nw });
       closeModal();
-      alert('Mot de passe réinitialisé âœ“');
+      alert('Mot de passe réinitialisé ✓');
     } catch (err) { alert(err.message); }
   });
 }
@@ -502,7 +502,7 @@ async function toggleUserRole(id) {
   if (!u) return;
   if (u.id === __currentUserId) return alert('Vous ne pouvez pas modifier votre propre rôle.');
   const want = u.role === 'admin' ? 'user' : 'admin';
-  if (!confirm(`Passer Â« ${u.name} Â» en ${want === 'admin' ? 'administrateur' : 'utilisateur'} ?`)) return;
+  if (!confirm(`Passer « ${u.name} » en ${want === 'admin' ? 'administrateur' : 'utilisateur'} ?`)) return;
   try {
     await API.put(`/admin/users/${id}`, { role: want });
     await loadUsers();
@@ -512,7 +512,7 @@ async function toggleUserRole(id) {
 async function deleteUser(id) {
   const u = usersCache.find(x => x.id === id);
   if (!u) return;
-  if (!confirm(`Supprimer le compte Â« ${u.name} Â» ?`)) return;
+  if (!confirm(`Supprimer le compte « ${u.name} » ?`)) return;
   try {
     await API.del(`/admin/users/${id}`);
     await loadUsers();
@@ -534,7 +534,7 @@ function renderPosts() {
     <div class="post-item">
       <div>
         <h4>${esc(p.title)} ${!p.active ? '<span class="badge inactive">brouillon</span>' : ''}</h4>
-        <div class="muted">${esc(p.category || '')} Â· ${fmtDate(p.created_at)}</div>
+        <div class="muted">${esc(p.category || '')} · ${fmtDate(p.created_at)}</div>
       </div>
       <div class="post-actions">
         <button class="btn-sm" onclick="openPostForm(${p.id})">Modifier</button>
@@ -542,7 +542,7 @@ function renderPosts() {
         <button class="btn-sm red" onclick="deletePost(${p.id})">Supprimer</button>
       </div>
     </div>`).join('')
-  : '<p class="muted">Aucun article. Cliquez sur Â« + Nouvel article Â».</p>';
+  : '<p class="muted">Aucun article. Cliquez sur « + Nouvel article ».</p>';
 }
 
 async function togglePost(id) {
@@ -561,7 +561,7 @@ function openPostForm(id) {
   const body = `
     <div class="form-grid">
       <div class="form-field full"><label>Titre</label><input id="p_title" value="${esc(edit?.title || '')}"></div>
-      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualitéâ€¦"></div>
+      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualité…"></div>
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
@@ -616,7 +616,7 @@ async function loadExtra() {
     const payload = {};
     meta.forEach(m => payload[m.key] = $(`#x_${m.key}`).value);
     await API.put('/admin/settings', payload);
-    alert('Enregistré âœ“');
+    alert('Enregistré ✓');
   });
 }
 
