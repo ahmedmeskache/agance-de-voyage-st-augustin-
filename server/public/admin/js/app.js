@@ -166,7 +166,7 @@ window.addEventListener('hashchange', route);
 async function loadDashboard() {
   const st = await API.get('/admin/stats');
   $('#statGrid').innerHTML = `
-    <div class="stat-card"><b>${st.users}</b><span>Inscrits</span></div>
+    <div class="stat-card"><b>${st.users}</b><span>Admins</span></div>
     <div class="stat-card accent"><b>${st.offers}</b><span>Offres</span></div>
     <div class="stat-card"><b>${st.circuits}</b><span>Circuits</span></div>
     <div class="stat-card"><b>${st.excursions}</b><span>Excursions</span></div>

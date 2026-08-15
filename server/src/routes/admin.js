@@ -13,7 +13,7 @@ function publicUser(u) {
 // Dashboard stats
 router.get('/stats', adminRequired, (req, res) => {
   const one = {
-    users: db.prepare('SELECT COUNT(*) c FROM users').get().c,
+    users: db.prepare("SELECT COUNT(*) c FROM users WHERE role = 'admin'").get().c,
     offers: db.prepare('SELECT COUNT(*) c FROM offers').get().c,
     circuits: db.prepare('SELECT COUNT(*) c FROM offers WHERE type = ?').get('circuit').c,
     excursions: db.prepare('SELECT COUNT(*) c FROM offers WHERE type = ?').get('excursion').c,
