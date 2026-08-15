@@ -127,7 +127,42 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Clean URLs: hide the ".html" extension in the address bar.
+//   /blog.html  -> 301 -> /blog   (and /index.html -> 301 -> /)
+//   /blog       -> serves blog.html
+// The Google search-console verification file stays accessible at its literal
+// URL (it must not be redirected).
+const PAGES = fs.readdirSync(ROOT)
+  .filter((f) => /\.html$/i.test(f))
+  .map((f) => path.basename(f, path.extname(f)))
+  .filter((p) => !/^google/i.test(p));
+
+function queryString(u) {
+  const i = u.indexOf('?');
+  return i === -1 ? '' : u.slice(i);
+}
+
+// Redirect the ".html" form to the clean path (keep any query string).
+app.use((req, res, next) => {
+  const m = req.path.match(/^\/([^/]+)\.html$/i);
+  if (!m) return next();
+  const name = m[1];
+  if (PAGES.includes(name)) {
+    return res.redirect(301, (name === 'index' ? '/' : '/' + name) + queryString(req.originalUrl));
+  }
+  return next();
+});
+
 app.use(express.static(ROOT));
+
+// Serve "/page" as "/page.html" so the extension never appears in the URL.
+app.get('/:page', (req, res, next) => {
+  const name = req.params.page;
+  if (name === 'index') return res.redirect(301, '/' + queryString(req.originalUrl));
+  if (PAGES.includes(name)) return res.sendFile(path.join(ROOT, name + '.html'));
+  return next();
+});
 
 // A saved row only needs (re)translation when the EN/AR value is missing or
 // looks truncated by the old 500-character cap (stored far shorter than the
