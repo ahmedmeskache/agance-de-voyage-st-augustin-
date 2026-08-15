@@ -1,6 +1,13 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'node:crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-me-to-a-long-random-string';
+// If JWT_SECRET is not configured, generate a strong random one at boot so
+// the publicly-known default can never be used to forge tokens. Consequence:
+// without JWT_SECRET, sessions are invalidated on every restart.
+export const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(48).toString('hex');
+if (!process.env.JWT_SECRET) {
+  console.warn('[security] JWT_SECRET non défini — secret aléatoire généré (les sessions expirent à chaque redémarrage). Définissez JWT_SECRET dans Railway.');
+}
 export const TOKEN_EXPIRY = process.env.TOKEN_EXPIRY || '7d';
 
 export function signToken(payload) {
@@ -23,17 +30,6 @@ export function adminRequired(req, res, next) {
   authRequired(req, res, () => {
     if (req.user.role !== 'admin' && req.user.role !== 'manager') {
       return res.status(403).json({ error: 'Accès réservé aux administrateurs.' });
-    }
-    return next();
-  });
-}
-
-// Content editors: admin, manager AND regular users can add/edit content.
-export function contentRequired(req, res, next) {
-  authRequired(req, res, () => {
-    const role = req.user.role;
-    if (role !== 'admin' && role !== 'manager' && role !== 'user') {
-      return res.status(403).json({ error: 'Accès refusé.' });
     }
     return next();
   });

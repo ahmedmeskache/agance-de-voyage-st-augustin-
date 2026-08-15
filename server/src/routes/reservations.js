@@ -1,6 +1,6 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import db from '../db.js';
-import { authRequired, contentRequired } from '../middleware/auth.js';
+import { authRequired, adminRequired } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -36,7 +36,7 @@ router.get('/mine', authRequired, (req, res) => {
 });
 
 // Admin: all reservations (with optional status filter)
-router.get('/', contentRequired, (req, res) => {
+router.get('/', adminRequired, (req, res) => {
   const { status } = req.query;
   const rows = status
     ? db.prepare('SELECT * FROM reservations WHERE status = ? ORDER BY created_at DESC').all(status)
@@ -45,7 +45,7 @@ router.get('/', contentRequired, (req, res) => {
 });
 
 // Admin: update reservation status
-router.patch('/:id', contentRequired, (req, res) => {
+router.patch('/:id', adminRequired, (req, res) => {
   const { status } = req.body || {};
   if (!['pending', 'confirmed', 'cancelled'].includes(status)) {
     return res.status(400).json({ error: 'Statut invalide.' });
@@ -56,7 +56,7 @@ router.patch('/:id', contentRequired, (req, res) => {
 });
 
 // Admin: delete reservation
-router.delete('/:id', contentRequired, (req, res) => {
+router.delete('/:id', adminRequired, (req, res) => {
   db.prepare('DELETE FROM reservations WHERE id = ?').run(req.params.id);
   return res.json({ ok: true });
 });

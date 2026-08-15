@@ -1,10 +1,14 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import db from '../db.js';
-import { signToken, authRequired } from '../middleware/auth.js';
+import { signToken, authRequired, JWT_SECRET } from '../middleware/auth.js';
+import rateLimit from '../rateLimit.js';
 import 'dotenv/config';
 
 const router = Router();
+
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });
 
 function publicUser(u) {
   return { id: u.id, name: u.name, email: u.email, role: u.role, phone: u.phone };
@@ -26,7 +30,7 @@ function findOrCreate(profile, provider) {
 }
 
 // ---------- Email ----------
-router.post('/register', (req, res) => {
+router.post('/register', loginLimiter, (req, res) => {
   const { name, email, password, phone } = req.body || {};
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Nom, email et mot de passe requis.' });
@@ -45,7 +49,7 @@ router.post('/register', (req, res) => {
   return res.json({ token: signToken({ id: user.id, role: user.role }), user: publicUser(user) });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
   const { email, password } = req.body || {};
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (!user || !user.password_hash || !bcrypt.compareSync(password || '', user.password_hash)) {
@@ -59,7 +63,7 @@ router.get('/me', (req, res) => {
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return res.status(401).json({ error: 'Non connecté.' });
   try {
-    const payload = jwtVerify(token);
+    const payload = jwt.verify(token, JWT_SECRET);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(payload.id);
     if (!user) return res.status(401).json({ error: 'Utilisateur introuvable.' });
     const { password_hash, ...rest } = user;
@@ -144,7 +148,7 @@ router.get('/facebook/callback', async (req, res) => {
 });
 
 // ---------- Admin ----------
-router.post('/admin/login', (req, res) => {
+router.post('/admin/login', loginLimiter, (req, res) => {
   const { email, password } = req.body || {};
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (!user || !user.password_hash || !bcrypt.compareSync(password || '', user.password_hash)) {
@@ -192,11 +196,5 @@ router.put('/me', authRequired, (req, res) => {
   const { password_hash, ...rest } = updated;
   return res.json({ user: rest });
 });
-
-// lazily import jwt to avoid a second module in this file
-import jwt from 'jsonwebtoken';
-function jwtVerify(token) {
-  return jwt.verify(token, process.env.JWT_SECRET || 'change-me-to-a-long-random-string');
-}
 
 export default router;

@@ -1,10 +1,10 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import db from '../db.js';
-import { contentRequired, authRequired } from '../middleware/auth.js';
+import { adminRequired } from '../middleware/auth.js';
 import { translateFields } from '../translate.js';
 import { retranslatePost } from '../retranslate.js';
 
@@ -25,7 +25,12 @@ const storage = multer.diskStorage({
   destination: uploadsDir,
   filename: (req, file, cb) => cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname) || '.jpg'}`),
 });
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } });
+// Only image uploads (never HTML/JS that could be hosted as malicious pages).
+function imageFilter(req, file, cb) {
+  if (/^image\/(jpe?g|png|webp|gif)$/i.test(file.mimetype)) return cb(null, true);
+  return cb(new Error('Seules les images (jpg, png, webp, gif) sont autorisées.'));
+}
+const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 }, fileFilter: imageFilter });
 
 // Auto-translate title/excerpt/content to EN/AR, but never override a
 // translation the admin typed manually (those are used verbatim).
@@ -54,7 +59,7 @@ router.get('/', (req, res) => {
 });
 
 // Public single
-router.get('/admin/all', contentRequired, (req, res) => {
+router.get('/admin/all', adminRequired, (req, res) => {
   const rows = db.prepare('SELECT * FROM posts ORDER BY created_at DESC').all();
   return res.json(rows);
 });
@@ -69,7 +74,7 @@ router.get('/:id', (req, res) => {
 // Admin list (all, incl inactive)
 
 // Admin create
-router.post('/', contentRequired, upload.single('image'), async (req, res) => {
+router.post('/', adminRequired, upload.single('image'), async (req, res) => {
   const { title, category, excerpt, content, image_url, tags, active, title_en, title_ar, excerpt_en, excerpt_ar, content_en, content_ar, category_en, category_ar } = req.body || {};
   if (!title) return res.status(400).json({ error: 'Le titre est requis.' });
   const image = req.file ? `/uploads/${req.file.filename}` : (image_url || null);
@@ -88,7 +93,7 @@ router.post('/', contentRequired, upload.single('image'), async (req, res) => {
 });
 
 // Admin update
-router.put('/:id', contentRequired, upload.single('image'), async (req, res) => {
+router.put('/:id', adminRequired, upload.single('image'), async (req, res) => {
   const post = db.prepare('SELECT * FROM posts WHERE id = ?').get(req.params.id);
   if (!post) return res.status(404).json({ error: 'Article introuvable.' });
   const b = req.body || {};
@@ -123,7 +128,7 @@ router.put('/:id', contentRequired, upload.single('image'), async (req, res) => 
 });
 
 // Admin re-translate (fills missing/failed EN/AR text; force = overwrite all)
-router.post('/:id/retranslate', contentRequired, async (req, res) => {
+router.post('/:id/retranslate', adminRequired, async (req, res) => {
   try {
     const force = !!(req.body && req.body.force);
     const r = await retranslatePost(req.params.id, force);
@@ -139,7 +144,7 @@ router.post('/:id/retranslate', contentRequired, async (req, res) => {
 });
 
 // Admin delete
-router.delete('/:id', contentRequired, (req, res) => {
+router.delete('/:id', adminRequired, (req, res) => {
   db.prepare('DELETE FROM posts WHERE id = ?').run(req.params.id);
   return res.json({ ok: true });
 });

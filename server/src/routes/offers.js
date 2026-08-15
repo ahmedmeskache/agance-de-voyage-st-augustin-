@@ -1,10 +1,10 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import db from '../db.js';
-import { contentRequired, authRequired } from '../middleware/auth.js';
+import { adminRequired } from '../middleware/auth.js';
 import { translateFields } from '../translate.js';
 import { retranslateOffer } from '../retranslate.js';
 
@@ -30,8 +30,14 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
   },
 });
+// Only image uploads (never HTML/JS that could be hosted as malicious pages).
+function imageFilter(req, file, cb) {
+  if (/^image\/(jpe?g|png|webp|gif)$/i.test(file.mimetype)) return cb(null, true);
+  return cb(new Error('Seules les images (jpg, png, webp, gif) sont autorisées.'));
+}
+
 // Allow up to 3 images: image (FR), image_en, image_ar
-const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 } }).fields([
+const upload = multer({ storage, limits: { fileSize: 8 * 1024 * 1024 }, fileFilter: imageFilter }).fields([
   { name: 'image', maxCount: 1 },
   { name: 'image_en', maxCount: 1 },
   { name: 'image_ar', maxCount: 1 },
@@ -44,17 +50,21 @@ function imgField(req, name, urlVal) {
 }
 
 // GET /api/offers?type=circuit|excursion&page=local|international|omra|etranger|excursions&all=1
-// (public: active only unless admin all)
+// (public: active only; all=1 requires an admin token)
 router.get('/', (req, res) => {
   const { type, page, all } = req.query;
-  const conds = [];
-  const args = [];
-  if (type) { conds.push('type = ?'); args.push(type); }
-  if (page) { conds.push('page = ?'); args.push(page); }
-  if (all !== '1') conds.push('active = 1');
-  const where = conds.length ? 'WHERE ' + conds.join(' AND ') : '';
-  const rows = db.prepare(`SELECT * FROM offers ${where} ORDER BY created_at DESC`).all(...args);
-  return res.json(rows);
+  const serve = () => {
+    const conds = [];
+    const args = [];
+    if (type) { conds.push('type = ?'); args.push(type); }
+    if (page) { conds.push('page = ?'); args.push(page); }
+    if (all !== '1') conds.push('active = 1');
+    const where = conds.length ? 'WHERE ' + conds.join(' AND ') : '';
+    const rows = db.prepare(`SELECT * FROM offers ${where} ORDER BY created_at DESC`).all(...args);
+    return res.json(rows);
+  };
+  if (all === '1') return adminRequired(req, res, serve);
+  return serve();
 });
 
 // GET /api/offers/:id
@@ -86,7 +96,7 @@ async function buildTranslations(fr, overrides = {}) {
 }
 
 // POST /api/offers (admin) â€” optional image file(s) or image_url(s)
-router.post('/', contentRequired, upload, async (req, res) => {
+router.post('/', adminRequired, upload, async (req, res) => {
   const { type, page, name, category, details, program, price, duration, tags, image_url, image_en_url, image_ar_url, active } = req.body || {};
   if (!type || !name) return res.status(400).json({ error: 'Type et nom requis.' });
   const image = imgField(req, 'image', image_url);
@@ -109,7 +119,7 @@ router.post('/', contentRequired, upload, async (req, res) => {
 });
 
 // PUT /api/offers/:id (admin) â€” mix of fields; image(s) optional
-router.put('/:id', contentRequired, upload, async (req, res) => {
+router.put('/:id', adminRequired, upload, async (req, res) => {
   const offer = db.prepare('SELECT * FROM offers WHERE id = ?').get(req.params.id);
   if (!offer) return res.status(404).json({ error: 'Offre introuvable.' });
   const b = req.body || {};
@@ -149,7 +159,7 @@ router.put('/:id', contentRequired, upload, async (req, res) => {
 });
 
 // POST /api/offers/:id/retranslate (admin) — re-fill EN/AR text
-router.post('/:id/retranslate', contentRequired, async (req, res) => {
+router.post('/:id/retranslate', adminRequired, async (req, res) => {
   try {
     const force = !!(req.body && req.body.force);
     const r = await retranslateOffer(req.params.id, force);
@@ -165,7 +175,7 @@ router.post('/:id/retranslate', contentRequired, async (req, res) => {
 });
 
 // DELETE /api/offers/:id (admin)
-router.delete('/:id', contentRequired, (req, res) => {
+router.delete('/:id', adminRequired, (req, res) => {
   const info = db.prepare('DELETE FROM offers WHERE id = ?').run(req.params.id);
   if (!info.changes) return res.status(404).json({ error: 'Offre introuvable.' });
   return res.json({ ok: true });

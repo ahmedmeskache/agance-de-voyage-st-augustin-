@@ -20,7 +20,29 @@ const UPLOADS = process.env.DATA_DIR
 
 const app = express();
 app.disable('x-powered-by');
-app.use(cors());
+app.set('trust proxy', 1); // Railway sits behind a proxy -> real client IP for rate limiting
+
+// CORS: the site and API are same-origin. Cross-origin calls are only allowed
+// from the configured PUBLIC_URL (no wildcard).
+const publicOrigin = (process.env.PUBLIC_URL || '').replace(/\/+$/, '');
+app.use(cors({
+  origin(origin, cb) {
+    if (!origin) return cb(null, true);              // same-origin / non-browser
+    if (!publicOrigin) return cb(null, true);        // not configured -> dev/open
+    return cb(null, origin === publicOrigin);
+  },
+  credentials: true,
+}));
+
+// Basic hardening headers on every response.
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  if (req.secure) res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  next();
+});
+
 app.use(express.json({ limit: '2mb' }));
 
 import db from './db.js';
@@ -32,6 +54,9 @@ function seedAdmin() {
   const email = process.env.ADMIN_EMAIL || 'admin@satv.dz';
   const password = process.env.ADMIN_PASSWORD || 'admin123456';
   const name = process.env.ADMIN_NAME || 'Administrateur';
+  if (!process.env.ADMIN_PASSWORD || password === 'admin123456' || password.length < 12) {
+    console.warn('[security] ADMIN_PASSWORD manquant ou trop faible — définissez un mot de passe administrateur fort dans Railway (ADMIN_PASSWORD).');
+  }
   const existing = db.prepare('SELECT id FROM users WHERE role = ?').get('admin');
   if (!existing) {
     db.prepare('INSERT INTO users (name, email, password_hash, provider, role) VALUES (?, ?, ?, ?, ?)')
@@ -111,8 +136,11 @@ app.get('/api/settings', (req, res) => {
   return res.json(obj);
 });
 
-// Uploaded images (public)
-app.use('/uploads', express.static(UPLOADS, { maxAge: '7d' }));
+// Uploaded images (public) — nosniff so a file can never be sniffed as HTML
+app.use('/uploads', express.static(UPLOADS, {
+  maxAge: '7d',
+  setHeaders: (res) => res.setHeader('X-Content-Type-Options', 'nosniff'),
+}));
 
 // Admin panel (own login gate is client-side via JWT)
 app.use('/admin', express.static(ADMIN_PUBLIC));
