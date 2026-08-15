@@ -271,8 +271,8 @@ function openOfferForm(id) {
   const body = `
     <div class="form-grid">
       <div class="form-field full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button type="button" class="btn-sm gray" id="loadOfferTemplateBtn">Charger un mod�le (Cirta)</button>
-        <span class="muted" style="font-size:12px">Remplit le formulaire avec un exemple pr�t � personnaliser.</span>
+        <button type="button" class="btn-sm gray" id="loadOfferTemplateBtn">Charger un modèle (Cirta)</button>
+        <span class="muted" style="font-size:12px">Remplit le formulaire avec un exemple prêt à personnaliser.</span>
       </div>
       <div class="form-field">
         <label>Type</label>
@@ -282,35 +282,35 @@ function openOfferForm(id) {
         </select>
       </div>
       <div class="form-field">
-        <label>Page / cat�gorie (o� afficher)</label>
+        <label>Page / catégorie (où afficher)</label>
         <select id="f_page">
-          <option value="local" data-page-for="circuit">Circuit Local (Alg�rie)</option>
+          <option value="local" data-page-for="circuit">Circuit Local (Algérie)</option>
           <option value="international" data-page-for="circuit">Circuit International</option>
           <option value="omra" data-page-for="circuit">Omra</option>
-          <option value="etranger" data-page-for="circuit">�trangers (D�couverte de l'Afrique du Nord)</option>
-          <option value="excursions" data-page-for="excursion">Excursions int�rieur</option>
+          <option value="etranger" data-page-for="circuit">Étrangers (Découverte de l'Afrique du Nord)</option>
+          <option value="excursions" data-page-for="excursion">Excursions intérieur</option>
         </select>
       </div>
       <div class="form-field"><label>Nom</label><input id="f_name" value="${esc(edit?.name || '')}" placeholder="Ex : Circuit Annaba"></div>
-      <div class="form-field"><label>Type / cat�gorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel."></div>
+      <div class="form-field"><label>Type / catégorie</label><input id="f_category" value="${esc(edit?.category || '')}" placeholder="Ex : Spirituel, Culturel."></div>
       <div class="form-field"><label>Tarif</label><input id="f_price" value="${esc(edit?.price || '')}" placeholder="Ex : 25 000 DZD"></div>
-      <div class="form-field full"><label>Image - Fran�ais</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL (ou choisir un fichier)">
+      <div class="form-field full"><label>Image - Français</label><input id="f_image_url" value="${esc(edit?.image || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_file" type="file" accept="image/*">
         ${edit && edit.image ? `<img class="img-preview" src="${esc(edit.image)}">` : ''}</div>
       <div class="form-field full"><label>Image - English</label><input id="f_image_en_url" value="${esc(edit?.image_en || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_en_file" type="file" accept="image/*">
         ${edit && edit.image_en ? `<img class="img-preview" src="${esc(edit.image_en)}">` : ''}</div>
-      <div class="form-field full"><label>Image - ???????</label><input id="f_image_ar_url" value="${esc(edit?.image_ar || '')}" placeholder="URL (ou choisir un fichier)">
+      <div class="form-field full"><label>Image - العربية</label><input id="f_image_ar_url" value="${esc(edit?.image_ar || '')}" placeholder="URL (ou choisir un fichier)">
         <input id="f_image_ar_file" type="file" accept="image/*">
         ${edit && edit.image_ar ? `<img class="img-preview" src="${esc(edit.image_ar)}">` : ''}</div>
-      <div class="form-field full"><label>D�tails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
+      <div class="form-field full"><label>Détails (description courte)</label><textarea id="f_details" placeholder="Description">${esc(edit?.details || '')}</textarea></div>
       <div class="form-field full">
-        <label>Programme (�tapes)</label>
+        <label>Programme (étapes)</label>
         <div id="f_program_steps"></div>
-        <button type="button" class="btn-sm gray" id="addProgStepBtn" style="margin-top:8px">+ Ajouter une �tape</button>
+        <button type="button" class="btn-sm gray" id="addProgStepBtn" style="margin-top:8px">+ Ajouter une étape</button>
       </div>
-      <div class="form-field"><label>Dur�e</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
-      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publi�e</label></div>
+      <div class="form-field"><label>Durée</label><input id="f_duration" value="${esc(edit?.duration || '')}" placeholder="Ex : 5 jours / 4 nuits"></div>
+      <div class="checkbox-row"><input type="checkbox" id="f_active" ${!edit || edit.active ? 'checked' : ''}><label for="f_active">Offre active / publiée</label></div>
     </div>
     <input type="hidden" id="f_program" value="${esc(edit?.program || '')}">
     <div class="form-row">
@@ -325,10 +325,10 @@ function openOfferForm(id) {
     stepsWrap.innerHTML = steps.map((s, i) => `
       <div class="prog-step" data-idx="${i}" style="display:grid;grid-template-columns:140px 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:start">
         <input class="ps-label" placeholder="Jour 1" value="${esc(s.label)}">
-        <input class="ps-title" placeholder="Titre de l'�tape" value="${esc(s.title)}">
+        <input class="ps-title" placeholder="Titre de l'étape" value="${esc(s.title)}">
         <textarea class="ps-desc" rows="2" placeholder="Description...">${esc(s.desc)}</textarea>
-        <button type="button" class="btn-sm red ps-del" data-idx="${i}">�</button>
-      </div>`).join('') || '<p class="muted" style="margin:0">Aucune �tape. Cliquez sur &#171; + Ajouter une �tape &#187;.</p>';
+        <button type="button" class="btn-sm red ps-del" data-idx="${i}">×</button>
+      </div>`).join('') || '<p class="muted" style="margin:0">Aucune étape. Cliquez sur &#171; + Ajouter une étape &#187;.</p>';
     stepsWrap.querySelectorAll('.ps-del').forEach(b => b.addEventListener('click', () => {
       const steps = getSteps();
       steps.splice(+b.dataset.idx, 1);
@@ -359,11 +359,11 @@ function openOfferForm(id) {
     $('#f_category').value = 'Culturel / Patrimoine';
     $('#f_price').value = '';
     $('#f_duration').value = '3 jours / 2 nuits';
-    $('#f_details').value = 'Programme touristique de 3 jours / 2 nuits : visites historiques, patrimoine et paysages spectaculaires. Accompagn� et sur demande.';
+    $('#f_details').value = 'Programme touristique de 3 jours / 2 nuits : visites historiques, patrimoine et paysages spectaculaires. Accompagné et sur demande.';
     renderSteps([
-      { label: 'Jour 1', title: 'Arriv�e et d�couverte', desc: 'Installation puis premi�re visite : panoramas et principaux monuments de la ville.' },
-      { label: 'Jour 2', title: 'Patrimoine et culture', desc: 'Visites guid�es des sites historiques, mus�es et march�s locaux.' },
-      { label: 'Jour 3', title: 'D�part', desc: 'Derni�re visite, pause souvenir, puis retour. Fin du circuit.' },
+      { label: 'Jour 1', title: 'Arrivée et découverte', desc: 'Installation puis première visite : panoramas et principaux monuments de la ville.' },
+      { label: 'Jour 2', title: 'Patrimoine et culture', desc: 'Visites guidées des sites historiques, musées et marchés locaux.' },
+      { label: 'Jour 3', title: 'Départ', desc: 'Dernière visite, pause souvenir, puis retour. Fin du circuit.' },
     ]);
     syncPageOptions();
   });
@@ -642,16 +642,16 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
   const body = `
     <div class="form-grid">
       <div class="form-field full" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button type="button" class="btn-sm gray" id="loadPostTemplateBtn">Charger un mod�le (article)</button>
-        <span class="muted" style="font-size:12px">Pr�-remplit un article type pr�t � personnaliser.</span>
+        <button type="button" class="btn-sm gray" id="loadPostTemplateBtn">Charger un modèle (article)</button>
+        <span class="muted" style="font-size:12px">Pré-remplit un article type prêt à personnaliser.</span>
       </div>
       <div class="form-field full"><label>Titre</label><input id="p_title" value="${esc(edit?.title || '')}"></div>
-      <div class="form-field"><label>Cat�gorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualit�."></div>
-      <div class="form-field"><label>Tags (s�par�s par des virgules)</label><input id="p_tags" value="${esc(edit?.tags || '')}" placeholder="Ex : UNESCO, Culture, Festival"></div>
+      <div class="form-field"><label>Catégorie</label><input id="p_category" value="${esc(edit?.category || '')}" placeholder="Ex : Guide, Actualité."></div>
+      <div class="form-field"><label>Tags (séparés par des virgules)</label><input id="p_tags" value="${esc(edit?.tags || '')}" placeholder="Ex : UNESCO, Culture, Festival"></div>
       <div class="form-field"><label>Image</label><input id="p_image_url" value="${esc(edit?.image || '')}" placeholder="URL"><input id="p_image_file" type="file" accept="image/*"></div>
       <div class="form-field full"><label>Extrait (accroche)</label><textarea id="p_excerpt">${esc(edit?.excerpt || '')}</textarea></div>
       <div class="form-field full"><label>Contenu</label><textarea id="p_content" style="min-height:180px">${esc(edit?.content || '')}</textarea></div>
-      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publi�</label></div>
+      <div class="checkbox-row"><input type="checkbox" id="p_active" ${!edit || edit.active ? 'checked' : ''}><label for="p_active">Publié</label></div>
     </div>
     <div class="form-row">
       <button class="btn-sm gray" onclick="closeModal()">Annuler</button>
@@ -661,15 +661,15 @@ const edit = id ? postsCache.find(p => p.id === id) : null;
 
   $('#loadPostTemplateBtn').addEventListener('click', () => {
     $('#p_category').value = 'Culture & Patrimoine';
-    $('#p_tags').value = 'UNESCO, Alg�rie, D�couverte';
-    $('#p_excerpt').value = 'D�couvrez ce lieu exceptionnel : histoire mill�naire, paysages spectaculaires et traditions vivantes vous attendent.';
+    $('#p_tags').value = 'UNESCO, Algérie, Découverte';
+    $('#p_excerpt').value = 'Découvrez ce lieu exceptionnel : histoire millénaire, paysages spectaculaires et traditions vivantes vous attendent.';
     $('#p_content').value = [
       'Un voyage au coeur de l\'histoire',
-      'De ce haut lieu, chaque pierre raconte une histoire. Class�/reconnu pour son patrimoine, il fascine par son atmosph�re unique et ses panoramas remarquables.',
+      'De ce haut lieu, chaque pierre raconte une histoire. Classé/reconnu pour son patrimoine, il fascine par son atmosphère unique et ses panoramas remarquables.',
       'Les temps forts de la visite',
-      'Parcourez les principaux sites, rencontrez les habitants et laissez-vous guider par nos accompagnateurs passionn�s.',
+      'Parcourez les principaux sites, rencontrez les habitants et laissez-vous guider par nos accompagnateurs passionnés.',
       'Pourquoi y aller avec S.A.T.V.',
-      'Transport, guide et logistique pris en charge : vivez l\'exp�rience en toute s�r�nit�, � votre rythme.'
+      'Transport, guide et logistique pris en charge : vivez l\'expérience en toute sérénité, à votre rythme.'
     ].join('\n\n');
   });
 
