@@ -4,6 +4,31 @@
    active link state, accordions, and simple form handling.
    ========================================================= */
 
+/* ---------- CLEAN URLs (hide ".html" everywhere) ---------- */
+(function () {
+  function strip(p) { return p.replace(/\.html$/i, ''); }
+  // Fix the address bar right away if a stale/cached link left ".html" in it.
+  var path = strip(location.pathname);
+  if (path !== location.pathname) {
+    var u = path + location.search + location.hash;
+    try { history.replaceState({}, '', u === '' ? '/' : u); } catch (_) {}
+  }
+  // Intercept every link click and strip ".html" before navigating, so the
+  // address bar can never keep the extension.
+  document.addEventListener('click', function (e) {
+    var a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href.indexOf('.html') === -1) return;
+    if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return; // external URL
+    if (href.indexOf('//') === 0) return;          // protocol-relative
+    var clean = strip(href);
+    if (clean === href) return;
+    e.preventDefault();
+    location.href = clean;
+  }, true);
+})();
+
 /* ---------- SHARED TRANSLATIONS (chrome used on every page) ---------- */
 const siteTranslations = {
   fr: {
