@@ -55,13 +55,23 @@ GETTING ON GOOGLE SEARCH (SEO)
 5. Wait days-to-weeks for Google to index (Search Console "Request Indexing").
 
 -----------------------------------------------
-KNOWN LIMIT (IMPORTANT BEFORE SELLING)
+MAKE DATA PERSISTENT (volume) - DO THIS
 -----------------------------------------------
-SQLite stores data in a local file. On Railway the file resets whenever
-the app restarts (esp. free tier), so offers/reservations you add in the
-admin can disappear. For a reliable production launch, the backend must
-use a persistent database (e.g. Railway-managed Postgres). This code is
-currently SQLite-only.
+The app stores its SQLite database AND uploaded images on disk. On
+Railway that disk is erased on every new deployment (e.g. every git push
+that auto-redeploys), so offers/reservations/images can vanish.
+
+FIX (one time, in the Railway dashboard):
+1. In your service, open Settings > Volumes > "Mount Volume".
+2. Mount a volume at path  /data
+3. In Settings > Variables add:  DATA_DIR=/data
+4. Redeploy once. From now on the database + uploaded images survive
+   every push/redeploy/restart.
+
+The app uses DATA_DIR for both the SQLite DB (DATA_DIR/satv.db) and
+uploaded images (DATA_DIR/uploads). Without DATA_DIR it falls back to
+the local project folders (server/src/data + uploads), which is fine
+for local development.
 
 -----------------------------------------------
 ADMIN LOGIN (local and after deploy)

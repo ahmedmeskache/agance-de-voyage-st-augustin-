@@ -4,49 +4,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = path.join(__dirname, 'data');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new Database(path.join(dataDir, 'satv.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
-
-// Migration: add `page` and per-language image columns if they don't exist.
-const offersCols = db.prepare(`PRAGMA table_info(offers)`).all().map(c => c.name);
-if (!offersCols.includes('page')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN page TEXT;`);
-}
-if (!offersCols.includes('image_en')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN image_en TEXT;`);
-}
-if (!offersCols.includes('image_ar')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN image_ar TEXT;`);
-}
-// Per-language text columns (auto-translated from French at save time)
-if (!offersCols.includes('name_en')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN name_en TEXT;`);
-}
-if (!offersCols.includes('name_ar')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN name_ar TEXT;`);
-}
-if (!offersCols.includes('details_en')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN details_en TEXT;`);
-}
-if (!offersCols.includes('details_ar')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN details_ar TEXT;`);
-}
-if (!offersCols.includes('program_en')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN program_en TEXT;`);
-}
-if (!offersCols.includes('program_ar')) {
-  db.exec(`ALTER TABLE offers ADD COLUMN program_ar TEXT;`);
-}
-
-// Blog tags (comma-separated) for tag pills on the article page.
-const postCols = db.prepare(`PRAGMA table_info(posts)`).all().map(c => c.name);
-if (!postCols.includes('tags')) {
-  db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT;`);
-}
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
@@ -118,5 +81,42 @@ CREATE TABLE IF NOT EXISTS settings (
   value TEXT
 );
 `);
+
+// Migrations: add missing columns (safe to run on existing databases).
+const offersCols = db.prepare(`PRAGMA table_info(offers)`).all().map(c => c.name);
+if (!offersCols.includes('page')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN page TEXT;`);
+}
+if (!offersCols.includes('image_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN image_en TEXT;`);
+}
+if (!offersCols.includes('image_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN image_ar TEXT;`);
+}
+// Per-language text columns (auto-translated from French at save time)
+if (!offersCols.includes('name_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN name_en TEXT;`);
+}
+if (!offersCols.includes('name_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN name_ar TEXT;`);
+}
+if (!offersCols.includes('details_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN details_en TEXT;`);
+}
+if (!offersCols.includes('details_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN details_ar TEXT;`);
+}
+if (!offersCols.includes('program_en')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN program_en TEXT;`);
+}
+if (!offersCols.includes('program_ar')) {
+  db.exec(`ALTER TABLE offers ADD COLUMN program_ar TEXT;`);
+}
+
+// Blog tags (comma-separated) for tag pills on the article page.
+const postCols = db.prepare(`PRAGMA table_info(posts)`).all().map(c => c.name);
+if (!postCols.includes('tags')) {
+  db.exec(`ALTER TABLE posts ADD COLUMN tags TEXT;`);
+}
 
 export default db;

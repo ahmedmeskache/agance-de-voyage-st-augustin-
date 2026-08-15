@@ -14,7 +14,9 @@ import adminRoutes from './routes/admin.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '../..');           // project root (static site)
 const ADMIN_PUBLIC = path.join(__dirname, '../public/admin'); // admin SPA
-const UPLOADS = path.join(ROOT, 'uploads');
+const UPLOADS = process.env.DATA_DIR
+  ? path.join(process.env.DATA_DIR, 'uploads')
+  : path.join(ROOT, 'uploads');
 
 const app = express();
 app.disable('x-powered-by');
